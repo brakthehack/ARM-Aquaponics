@@ -3,12 +3,12 @@
  * Filename: f3d_button.c
  * Description: 
  * Author: Bryce Himebaugh
- * Maintainer: 
+ * Maintainer: Ching Yuen Ng/ Brian Rak
  * Created: Thu Jan 17 16:21:57 2013 (-0500)
  * Version: 
- * Last-Updated: 
- *           By: 
- *     Update #: 0
+ * Last-Updated: 01/17/2014
+ *           By: Ching Yuen Ng
+ *     Update #: 1
  * URL: 
  * Doc URL: 
  * Keywords
@@ -44,12 +44,24 @@
  */
 
 /* Code: */
+#include <stm32f30x_gpio.h>
 #include <f3d_button.h>
 
 void f3d_button_init() {
+  GPIO_InitTypeDef GPIO_InitStructure;
+  GPIO_StructInit(&GPIO_InitStructure);
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
 }
 
+//return the button state, either 1 or 0
 uint8_t f3d_button_read() {
+  uint8_t button_state = 0x00;
+  button_state = GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_0);
+  return button_state;
 }
 
 /* f3d_button.c ends here */
