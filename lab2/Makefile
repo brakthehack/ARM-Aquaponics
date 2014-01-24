@@ -7,7 +7,7 @@ ASFLAGS = -g
 
 # object files
 
-OBJS=  $(STARTUP) main.o f3d_led.o f3d_uart.o newlib_stubs.o
+OBJS=  $(STARTUP) main.o f3d_led.o f3d_uart.o f3d_button.o  stm32f30x_rcc.o stm32f30x_gpio.o newlib_stubs.o  stm32f30x_usart.o
 
 # include common make file
 

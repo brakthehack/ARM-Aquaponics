@@ -3,11 +3,11 @@
  * Filename: f3d_uart.h
  * Description: 
  * Author: Bryce Himebaugh
- * Maintainer: 
+ * Maintainer: Ching Yuen Ng/ Brian Rak
  * Created: Thu Sep 26 07:05:43 2013
- * Last-Updated: 
- *           By: 
- *     Update #: 0
+ * Last-Updated: 01-24-2014
+ *           By: Ching Yuen Ng/ Brain Rak
+ *     Update #: 1
  * Keywords: 
  * Compatibility: 
  * 
@@ -34,10 +34,15 @@
 
 /* Code: */
 #include <stm32f30x.h>
+#include <stm32f30x_gpio.h>
+#include <stm32f30x_usart.h>
+
 
 void f3d_uart_init(void);
 int putchar(int);
 int getchar(void);
 void putstring(char *);
+//non-stop version of getchar()
+int readchar(void);
 
 /* f3d_uart.h ends here */
