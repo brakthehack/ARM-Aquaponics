@@ -71,6 +71,7 @@ int main(void) {
     if (buffer == 'p'){
       printf("p\n");
       f3d_led_on(led);
+      printf(di[led]);
       while (buffer != 'r') {
 	buffer = readchar();
 	delay();
