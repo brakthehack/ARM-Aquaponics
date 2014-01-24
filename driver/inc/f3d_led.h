@@ -25,6 +25,7 @@
  */
 
 /* Code: */
+#include <stm32f30x.h>
 
 void f3d_led_init(void);
 void f3d_led_on(int led); 
