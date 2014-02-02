@@ -5,9 +5,9 @@
  * Author: 
  * Maintainer: Ching Yuen Ng/ Brian Rak
  * Created: Thu Jan 10 11:23:43 2013
- * Last-Updated: 01-24-2014
+ * Last-Updated: 02-2-2014
  *           By: Ching Yuen Ng/ Brian Rak
- *     Update #: 1
+ *     Update #: 2
  * Keywords: 
  * Compatibility: 
  * 
@@ -29,9 +29,9 @@
 #include <f3d_led.h>     // Pull in include file for the local drivers
 #include <f3d_uart.h>
 #include <f3d_button.h>
-#include <stdio.h>
 #include <f3d_gyro.h>
-#include <inttypes.h>
+#include <stdio.h>
+
 
 // Simple looping delay function
 void delay(void) {
@@ -44,7 +44,6 @@ void delay(void) {
 
 
 int main(void) { 
-  //driver init
   f3d_uart_init();
   f3d_led_init();
   f3d_button_init();
@@ -54,60 +53,90 @@ int main(void) {
   setvbuf(stdout, NULL, _IONBF, 0);
   setvbuf(stderr, NULL, _IONBF, 0);
 
+  int button;
   float buffer[2];
+  int xyz_axis[]={1,0,0};
+  char c;
 
   while (1) {
+    //read button state
+    button=GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_0);
+
+    //read char input from keyboard
+    c=readchar();
+
+    //read the char to change the axis
+    if(c=='x') {
+      xyz_axis[0]=1;
+      xyz_axis[1]=0;
+      xyz_axis[2]=0;
+    }
+    else if(c=='y') {
+      xyz_axis[0]=0;
+      xyz_axis[1]=1;
+      xyz_axis[2]=0;
+    }
+    else if(c=='z') {
+      xyz_axis[0]=0;
+      xyz_axis[1]=0;
+      xyz_axis[2]=1;
+    }
+
+    //if the button is pressed, change to next axis
+    if(button){
+      if(xyz_axis[0]){
+	xyz_axis[0]=0;
+	xyz_axis[1]=1;
+	xyz_axis[2]=0;
+      }
+      else if(xyz_axis[1]){
+	xyz_axis[0]=0;
+	xyz_axis[1]=0;
+	xyz_axis[2]=1;
+      }
+      else if (xyz_axis[2]){
+	xyz_axis[0]=1;
+	xyz_axis[1]=0;
+	xyz_axis[2]=0;
+      }
+    }
+
+    //printf("x: %f y: %f z: %f\n", buffer[0], buffer[1], buffer[2]);
+
+    //get data from gyro
     f3d_gyro_getdata(buffer);
-    delay();
-    printf("x: %f y: %f z: %f\n", buffer[0], buffer[1], buffer[2]);
+    
+    //print out the current axis and the value of it
+    if(xyz_axis[0]){printf("Currently in X Axis: %f\n",buffer[0]);}
+    else if(xyz_axis[1]){printf("Currently in Y Axis: %f\n",buffer[1]);}
+    else if(xyz_axis[2]){printf("Currently in Z Axis: %f\n",buffer[2]);}
+
+    //to get the rate of current axis
+    int rate,i;    
+    for(i=0;i<3;i++){
+	if(xyz_axis[i]){
+	  rate=buffer[i];
+	  break;
+	}
+    }
+
+    //LEDs start from all off
+    f3d_led_all_off();
+    
+    //start from North LED, positive value ligth up western side 
+    if(rate>5||rate<-5) f3d_led_on(0); //North LED
+    if(rate>75) f3d_led_on(7);
+    if(rate>150) f3d_led_on(6);
+    if(rate>225) f3d_led_on(5);
+
+    //start from North LED, negative value light up eastern side
+    if(rate>300||rate<-300) f3d_led_on(4); //South LED
+    if(rate<-75) f3d_led_on(1);
+    if(rate<-150) f3d_led_on(2);
+    if(rate<-225) f3d_led_on(3);
   }
 
-/*
-  char* di[]={"N\n","NE\n","E\n","SE\n","S\n","SW\n","W\n","NW\n"};
-  int led=0;
-  int buffer = '\0';
 
-  
-  while(1){
-    buffer = readchar();
-
-    //while the button not being pressed
-    if(!f3d_button_read()){
-      f3d_led_on(led);
-      delay();
-      f3d_led_off(led);
-      printf(di[led++]);
-    }
-
-    //if p is pressed
-    if (buffer == 'p'){
-      printf("p\n");
-      f3d_led_on(led);
-      printf(di[led]);
-      while (buffer != 'r') {
-	buffer = readchar();
-	delay();
-      }
-      printf("r\n");
-    }
-    
-    //go back to the north led if it has finished a round
-    if(led>7){
-      f3d_led_all_on();
-      delay();
-      f3d_led_all_off();
-      delay();
-      delay();
-      led=0;
-    }
-
-    //if the button is being pressed and p is not pressed, 
-    //the current led will stay on
-    else{
-      f3d_led_on(led);
-    }
-   
-  }*/
 }
 #ifdef USE_FULL_ASSERT
 void assert_failed(uint8_t* file, uint32_t line) {

@@ -1,4 +1,5 @@
-
+//Name: Ching Yuen Ng/ Brian Rak
+//Last update: 02-2-2014
 
 #include <stm32f30x.h>
 #include <inttypes.h>

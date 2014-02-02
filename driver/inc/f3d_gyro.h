@@ -1,3 +1,6 @@
+//Name: Ching Yuen Ng/ Brian Rak
+//Last update date: 02-02-2014
+
 #include <stm32f30x.h>
 
 #define L3G_Sensitivity_250dps (float) 114.285f
