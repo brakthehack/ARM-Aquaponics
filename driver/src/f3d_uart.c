@@ -35,7 +35,17 @@
 /* Code: */
 #include <f3d_uart.h>
 
+#define INTERRUPT 1
+
 void f3d_uart_init(void) {
+
+
+  /* INTERRUPT QUEUES INIT */
+#ifdef INTERRUPT
+  init_queue(&rxbuf);
+  init_queue(&txbuf);
+#endif
+
   // Initialization routines related to UART1
 
   //GPIOC Clock Enable
@@ -70,14 +80,25 @@ void f3d_uart_init(void) {
 }
 
 int putchar(int c) {
+
+#ifdef INTERRUPT
+  while (!enqueue(&txbuf, c));
+#else
   while (USART_GetFlagStatus(USART1,USART_FLAG_TXE) ==
-	 (uint16_t)RESET); USART_SendData(USART1, c);
+      (uint16_t)RESET); USART_SendData(USART1, c);
+#endif
   return 0;
 } 
 
 int getchar(void) {
+#ifdef INTERRUPT
+  int ch;
+  while (!(ch=dequeue(&rxbuf)));
+  return (ch);
+#else
   while (USART_GetFlagStatus(USART1, USART_FLAG_RXNE) == (uint16_t)RESET)
     return USART_ReceiveData(USART1);
+#endif
 }
 
 void putstring(char *s) {
@@ -86,6 +107,23 @@ void putstring(char *s) {
   }
 }
 
+void USART1_IRQHandler(void) {
+  int ch;
+
+  if (USART_GetFlagStatus(USART1, USART_FLAG_RXNE)) {
+    ch = USART_ReceiveData(USART1);
+    while (!enqueue(&rxbuf,ch));
+  }
+  if (USART_GetFlagStatus(USART1,USART_FLAG_TXE)) {
+    ch = dequeue(&txbuf);
+    if (ch) {
+      USART_SendData(USART1,ch);
+    }
+    else {
+      USART_ITConfig(USART1,USART_IT_TXE,DISABLE); 
+    }
+  }
+}
 
 //new version of getchar(), it will not be waiting for a input so that it won't stop while running.
 int readchar(void){

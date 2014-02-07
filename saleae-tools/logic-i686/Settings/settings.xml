@@ -2,8 +2,8 @@
 <!DOCTYPE boost_serialization>
 <boost_serialization signature="serialization::archive" version="5">
 <Settings class_id="0" tracking_level="0" version="8">
-	<mWindowTopLeftXPosition>76</mWindowTopLeftXPosition>
-	<mWindowTopLeftYPosition>24</mWindowTopLeftYPosition>
+	<mWindowTopLeftXPosition>155</mWindowTopLeftXPosition>
+	<mWindowTopLeftYPosition>25</mWindowTopLeftYPosition>
 	<mWindowWidth>1600</mWindowWidth>
 	<mWindowHeight>970</mWindowHeight>
 	<mMaximixed>0</mMaximixed>
@@ -12,7 +12,7 @@
 		<second>English, United States</second>
 	</mLocale>
 	<mLogicHardwareHasRun>1</mLogicHardwareHasRun>
-	<mRunCount>7</mRunCount>
+	<mRunCount>8</mRunCount>
 	<mLowerSampleRateOnError>1</mLowerSampleRateOnError>
 	<mDontShowScreenshotRegionMessageBox>0</mDontShowScreenshotRegionMessageBox>
 	<mDeviceSettings class_id="2" tracking_level="0" version="0">
@@ -469,7 +469,7 @@
 	<mCaptureMinimizeChannelLabels>0</mCaptureMinimizeChannelLabels>
 	<mCaptureHideFinders>0</mCaptureHideFinders>
 	<mDisplayBase>3</mDisplayBase>
-	<mCaptureSampleRateHz>2000000</mCaptureSampleRateHz>
+	<mCaptureSampleRateHz>1000000</mCaptureSampleRateHz>
 	<mCaptureNumSamples>10000000</mCaptureNumSamples>
 	<mCapturePreTriggerBufferSize>10000000</mCapturePreTriggerBufferSize>
 	<mDataExportSettings class_id="19" tracking_level="0" version="8">
@@ -536,8 +536,8 @@
 		<item>15</item>
 	</mLogic16ChannelSelection>
 	<mLogic16SpecificChannels>599391619</mLogic16SpecificChannels>
-	<mLogic16SpecificAnalyzer>4121765205</mLogic16SpecificAnalyzer>
-	<mLogic16SpecificFinder>4031601743</mLogic16SpecificFinder>
+	<mLogic16SpecificAnalyzer>62590623</mLogic16SpecificAnalyzer>
+	<mLogic16SpecificFinder>4031601742</mLogic16SpecificFinder>
 	<mInstallationId>{1f65a4c2-c1e3-4d6a-a8c4-b7ab7c154bcf}</mInstallationId>
 	<mLogic16LedBehavior>3</mLogic16LedBehavior>
 	<mEnableSingleClickToZoom>1</mEnableSingleClickToZoom>

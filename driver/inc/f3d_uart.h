@@ -36,7 +36,10 @@
 #include <stm32f30x.h>
 #include <stm32f30x_gpio.h>
 #include <stm32f30x_usart.h>
+#include <queue.h>
 
+queue_t rxbuf;
+queue_t txbuf;
 
 void f3d_uart_init(void);
 int putchar(int);

@@ -30,6 +30,7 @@
 #include <f3d_uart.h>
 #include <f3d_button.h>
 #include <f3d_gyro.h>
+#include <f3d_systick.h>
 #include <stdio.h>
 
 
@@ -48,16 +49,21 @@ void assert_failed(uint8_t* file, uint32_t line) {
 }
 #endif
 
+
 int main(void) { 
   f3d_uart_init();
   f3d_led_init();
   f3d_button_init();
   f3d_gyro_init();
+  f3d_systick_init();
 
   setvbuf(stdin, NULL, _IONBF, 0);
   setvbuf(stdout, NULL, _IONBF, 0);
   setvbuf(stderr, NULL, _IONBF, 0);
 
+  while (1) {
+  putchar(getchar());
+/*
   int button;
   float buffer[2];
   int xyz_axis[]={1,0,0};
@@ -110,7 +116,6 @@ int main(void) {
 
     //get data from gyro
     f3d_gyro_getdata(buffer);
-    assert_failed(&f3d_gyro_getdata, 113); 
     //print out the current axis and the value of it
     if(xyz_axis[0]){printf("Currently in X Axis: %f\n",buffer[0]);}
     else if(xyz_axis[1]){printf("Currently in Y Axis: %f\n",buffer[1]);}
@@ -139,8 +144,7 @@ int main(void) {
     if(rate<-75) f3d_led_on(1);
     if(rate<-150) f3d_led_on(2);
     if(rate<-225) f3d_led_on(3);
+  */
   }
-
-
 }
 /* main.c ends here */
