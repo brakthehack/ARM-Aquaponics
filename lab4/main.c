@@ -31,6 +31,8 @@
 #include <f3d_button.h>
 #include <f3d_gyro.h>
 #include <f3d_systick.h>
+#include <f3d_pressure.h>
+
 #include <stdio.h>
 
 
@@ -56,95 +58,25 @@ int main(void) {
   f3d_button_init();
   f3d_gyro_init();
   f3d_systick_init();
+  //f3d_pressure_init();
+  f3d_pressure_interface_init();
 
   setvbuf(stdin, NULL, _IONBF, 0);
   setvbuf(stdout, NULL, _IONBF, 0);
   setvbuf(stderr, NULL, _IONBF, 0);
 
-  while (1) {
-  putchar(getchar());
-/*
-  int button;
-  float buffer[2];
-  int xyz_axis[]={1,0,0};
-  char c;
+  uint8_t buffer=0x00;
+
+  
+  
+  printf("%x\n",buffer);
 
   while (1) {
-    //read button state
-    button=GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_0);
 
-    //read char input from keyboard
-    c=readchar();
+    f3d_pressure_read(&buffer, 0x0F, 1);
 
-    //read the char to change the axis
-    if(c=='x') {
-      xyz_axis[0]=1;
-      xyz_axis[1]=0;
-      xyz_axis[2]=0;
-    }
-    else if(c=='y') {
-      xyz_axis[0]=0;
-      xyz_axis[1]=1;
-      xyz_axis[2]=0;
-    }
-    else if(c=='z') {
-      xyz_axis[0]=0;
-      xyz_axis[1]=0;
-      xyz_axis[2]=1;
-    }
-
-    //if the button is pressed, change to next axis
-    if(button){
-      if(xyz_axis[0]){
-	xyz_axis[0]=0;
-	xyz_axis[1]=1;
-	xyz_axis[2]=0;
-      }
-      else if(xyz_axis[1]){
-	xyz_axis[0]=0;
-	xyz_axis[1]=0;
-	xyz_axis[2]=1;
-      }
-      else if (xyz_axis[2]){
-	xyz_axis[0]=1;
-	xyz_axis[1]=0;
-	xyz_axis[2]=0;
-      }
-    }
-
-    //printf("x: %f y: %f z: %f\n", buffer[0], buffer[1], buffer[2]);
-
-    //get data from gyro
-    f3d_gyro_getdata(buffer);
-    //print out the current axis and the value of it
-    if(xyz_axis[0]){printf("Currently in X Axis: %f\n",buffer[0]);}
-    else if(xyz_axis[1]){printf("Currently in Y Axis: %f\n",buffer[1]);}
-    else if(xyz_axis[2]){printf("Currently in Z Axis: %f\n",buffer[2]);}
-
-    //to get the rate of current axis
-    int rate,i;    
-    for(i=0;i<3;i++){
-	if(xyz_axis[i]){
-	  rate=buffer[i];
-	  break;
-	}
-    }
-
-    //LEDs start from all off
-    f3d_led_all_off();
-        
-    //start from North LED, positive value ligth up western side 
-    if(rate>5||rate<-5) f3d_led_on(0); //North LED
-    if(rate>75) f3d_led_on(7);
-    if(rate>150) f3d_led_on(6);
-    if(rate>225) f3d_led_on(5);
-
-    //start from North LED, negative value light up eastern side
-    if(rate>300||rate<-300) f3d_led_on(4); //South LED
-    if(rate<-75) f3d_led_on(1);
-    if(rate<-150) f3d_led_on(2);
-    if(rate<-225) f3d_led_on(3);
-  */
+    printf("%x\n",buffer);
+    //putchar(getchar());
   }
 }
 /* main.c ends here */

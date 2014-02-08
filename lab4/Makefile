@@ -13,6 +13,7 @@ OBJS=  $(STARTUP) main.o \
 									f3d_button.o \
 									f3d_gyro.o \
 									f3d_systick.o \
+									f3d_pressure.o \
 									newlib_stubs.o \
 									queue.o \
 									stm32f30x_rcc.o \

@@ -34,6 +34,7 @@
 
 /* Code: */
 #include <f3d_systick.h>
+#include <f3d_led.h>
 
 
 #define SYSTICK_INT_SEC 10
@@ -50,9 +51,11 @@ void SysTick_Handler(void) {
   static state = 0;
   state ^= 1;
   if (state)  {
-    GPIOE->BSRR = 0x8000;
+    //GPIOE->BSRR = 0x8000;
+    f3d_led_on(0);
   } else {
-    GPIOE->BRR = 0x8000;
+    //GPIOE->BRR = 0x8000;
+    f3d_led_off(0);
   }
   systick_flag = 1;
 }
