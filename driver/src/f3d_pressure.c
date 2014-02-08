@@ -85,13 +85,12 @@ NumByteToWrite)
 }
 
 void f3d_pressure_read(uint8_t* pBuffer, uint8_t ReadAddr, uint16_t NumByteToRead) {
-  /*if (NumByteToRead > 0x01) {
+  if (NumByteToRead > 0x01) {
     ReadAddr |= (uint8_t)(0x80 | 0x40); // If sending more that one byte set multibyte commands
   }
-  else {*/
-  ReadAddr=ReadAddr<<2;
-    ReadAddr |= (uint8_t) (0x01); // Else just set the read mode
-    //}
+  else {
+    ReadAddr |= (uint8_t) (0x80); // Else just set the read mode
+    }
   PRESSURE_CS_LOW();
   f3d_pressure_sendbyte(ReadAddr);
   while(NumByteToRead > 0x00) {
@@ -103,43 +102,31 @@ void f3d_pressure_read(uint8_t* pBuffer, uint8_t ReadAddr, uint16_t NumByteToRea
 }
 
 void f3d_pressure_init(void) {
-  uint8_t ctrl1 = 0x20;
-  uint8_t ctrl4 = 0x00;
+  uint8_t ctrl1 = 0x00;
   f3d_pressure_interface_init();
-  // CTRL1 Register
-  // Bit 7:6 Data Rate: Datarate 0
-  // Bit 5:4 Bandwidth: Bandwidth 3
-  // Bit 3: Power Mode: Active
-  // Bit 2:0 Axes Enable: X,Y,Z enabled
-  ctrl1 |= (uint8_t) (((uint8_t)0x20) |\
-  ((uint8_t)0x30) |\
-  ((uint8_t)0x08) |\
-  ((uint8_t)0x07));
-  // CTRL4 Register
-  // Bit 7 Block Update: Continuous */
-  // Bit 6 Endianess: LSB first */
-  // Bit 5:4 Full Scale: 500 dps */
-  ctrl4 |= (uint8_t) (((uint8_t)0x00) |\
-  ((uint8_t)0x00) |\
-  ((uint8_t)0x10));
-  f3d_pressure_write(&ctrl1, 0x20, 1);
-  f3d_pressure_write(&ctrl4, 0x23, 1);
+  /* set bit 7 to 1 power on
+			set bit 6:4 to 001 */
+	ctrl1 |= (uint8_t) (((uint8_t)0x80) | ((uint8_t)0x00));
+	f3d_pressure_write(&ctrl1, 0x20, 1);
 }
 
-/*
-void f3d_pressure_getdata(float *pfData) {
-  uint8_t tmpbuffer[6] ={0};
-  int16_t RawData[3] = {0};
+
+void f3d_pressure_getdata(float *pData, float *tData) {
+  uint8_t tmpbuffer[5] ={0}; // first 3 are pressure data, next 2 are temp data
+  int16_t RawData[2] = {0};
   float sensitivity = 0;
-  int i =0;
-  f3d_pressure_read(tmpbuffer,0x28,6);
-  // Read the data for all 4 axis
-  for(i=0; i<3; i++) {
-    RawData[i]=(int16_t)(((uint16_t)tmpbuffer[2*i+1] << 8) + tmpbuffer[2*i]);
-  }
-  for(i=0; i<3; i++) {
-    pfData[i]=(float)RawData[i]/L3G_Sensitivity_500dps;
-  }
+  int i = 0, BYTES_TO_READ = 5;
+  f3d_pressure_read(tmpbuffer,0x28,5);
+  // Read the data for pressure and temp
+  // pressure
+	RawData[0] = (int16_t) ((int16_t) tmpbuffer[0] &
+													 (int16_t) tmpbuffer[1] &
+														(int16_t) tmpbuffer[2]);
+	*pData = RawData[0]/4096;
+
+	// temp
+	RawData[1] = (int16_t) ((int16_t) tmpbuffer[3] &
+													(int16_t) tmpbuffer[4]);
+	*tData = 42.5 + RawData[1]/480;
 }
 
-*/

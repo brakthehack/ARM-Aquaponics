@@ -12,10 +12,6 @@
 
 #include <stm32f30x.h>
 
-//#define L3G_Sensitivity_250dps (float) 114.285f
-//#define L3G_Sensitivity_500dps (float) 57.1429f
-//#define L3G_Sensitivity_2000dps (float) 14.285f
-
 #define PRESSURE_CS_LOW() GPIO_ResetBits(GPIOA, GPIO_Pin_8);
 #define PRESSURE_CS_HIGH() GPIO_SetBits(GPIOA, GPIO_Pin_8);
 
@@ -24,4 +20,4 @@ static uint8_t f3d_pressure_sendbyte(uint8_t byte);
 void f3d_pressure_write(uint8_t* pBuffer, uint8_t WriteAddr, uint16_t NumByteToWrite);
 void f3d_pressure_read(uint8_t* pBuffer, uint8_t ReadAddr, uint16_t NumByteToRead);
 void f3d_pressure_init(void);
-void f3d_pressure_getdata(float *pfData);
+void f3d_pressure_getdata(float *pData, float *tData);

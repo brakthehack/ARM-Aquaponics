@@ -90,6 +90,10 @@ void f3d_uart_init(void) {
   USART_ITConfig(USART1, USART_IT_RXNE,ENABLE);
 }
 
+void flush_uart(void) {
+  USART_ITConfig(USART1,USART_IT_TXE,ENABLE);
+}
+
 int putchar(int c) {
 
 #ifdef INTERRUPT

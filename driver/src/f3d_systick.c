@@ -35,9 +35,11 @@
 /* Code: */
 #include <f3d_systick.h>
 #include <f3d_led.h>
+#include <f3d_uart.h>
 
 
 #define SYSTICK_INT_SEC 10
+
 
 volatile int systick_flag = 0;
 
@@ -58,6 +60,10 @@ void SysTick_Handler(void) {
     f3d_led_off(0);
   }
   systick_flag = 1;
+
+  if (!queue_empty(&txbuf)) {
+    flush_uart();
+  }
 }
 
 /* f3d_systick.c ends here */

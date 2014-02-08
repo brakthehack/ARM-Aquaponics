@@ -58,25 +58,22 @@ int main(void) {
   f3d_button_init();
   f3d_gyro_init();
   f3d_systick_init();
-  //f3d_pressure_init();
-  f3d_pressure_interface_init();
+  f3d_pressure_init();
 
   setvbuf(stdin, NULL, _IONBF, 0);
   setvbuf(stdout, NULL, _IONBF, 0);
   setvbuf(stderr, NULL, _IONBF, 0);
 
-  uint8_t buffer=0x00;
-
-  
-  
-  printf("%x\n",buffer);
+  float temp, pressure;
+  uint8_t buffer;
 
   while (1) {
 
-    f3d_pressure_read(&buffer, 0x0F, 1);
-
-    printf("%x\n",buffer);
-    //putchar(getchar());
+    f3d_pressure_getdata(&pressure, &temp);
+		f3d_pressure_read(&buffer, 0x27, 1);
+		printf("%x\n", buffer);
+		//printf("Temp (C): %f Pressure: %f\n",temp,pressure);
+ 
   }
 }
 /* main.c ends here */

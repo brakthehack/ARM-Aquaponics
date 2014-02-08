@@ -47,5 +47,6 @@ int getchar(void);
 void putstring(char *);
 //non-stop version of getchar()
 int readchar(void);
+void flush_uart(void);
 
 /* f3d_uart.h ends here */
