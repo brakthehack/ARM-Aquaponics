@@ -33,6 +33,7 @@
 #include <f3d_systick.h>
 #include <f3d_pressure.h>
 
+#include <math.h>
 #include <stdio.h>
 
 
@@ -51,29 +52,49 @@ void assert_failed(uint8_t* file, uint32_t line) {
 }
 #endif
 
+void Pressure_to_Altitude(float* Pressure_mb, float* Altitude_ft) {
+  //=(1-(A18/1013.25)^0.190284)*145366.45
+  *Altitude_ft = (1-pow(*Pressure_mb/1013.25,0.190284))*145366.45;
+}
+
 
 int main(void) { 
   f3d_uart_init();
   f3d_led_init();
   f3d_button_init();
   f3d_gyro_init();
-  f3d_systick_init();
+
   f3d_pressure_init();
+
+  delay();
+  f3d_systick_init();
 
   setvbuf(stdin, NULL, _IONBF, 0);
   setvbuf(stdout, NULL, _IONBF, 0);
   setvbuf(stderr, NULL, _IONBF, 0);
 
-  float temp, pressure;
+  extern float temp, pressure;
   uint8_t buffer;
+  extern float gyro_buffer[2];
+
+  float altitude;
 
   while (1) {
+    
+    //test whoami address, should print out BB
+    //f3d_pressure_read(&buffer, 0x0F, 1);
+    //printf("%x\n", buffer);
 
-    f3d_pressure_getdata(&pressure, &temp);
-		f3d_pressure_read(&buffer, 0x27, 1);
-		printf("%x\n", buffer);
-		//printf("Temp (C): %f Pressure: %f\n",temp,pressure);
+    printf("a\n");
+
+    //f3d_pressure_getdata(&pressure, &temp);
+    //printf("Temp (C): %d Pressure: %d\n",temp,pressure);
+
+    Pressure_to_Altitude(&pressure, &altitude);
+
+    printf("%f\n",altitude);
  
+    printf("x: %f y: %f z: %f\n", gyro_buffer[0], gyro_buffer[1], gyro_buffer[2]);
   }
 }
 /* main.c ends here */

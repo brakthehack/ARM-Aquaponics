@@ -103,30 +103,32 @@ void f3d_pressure_read(uint8_t* pBuffer, uint8_t ReadAddr, uint16_t NumByteToRea
 
 void f3d_pressure_init(void) {
   uint8_t ctrl1 = 0x00;
+  uint8_t res = 0x7A;
+  uint8_t ctrl2 = 0x01;
   f3d_pressure_interface_init();
-  /* set bit 7 to 1 power on
-			set bit 6:4 to 001 */
-	ctrl1 |= (uint8_t) (((uint8_t)0x80) | ((uint8_t)0x00));
-	f3d_pressure_write(&ctrl1, 0x20, 1);
+ 
+  f3d_pressure_write(&ctrl1, 0x20, 1); // @ 0x20=0x00
+  f3d_pressure_write(&res, 0x10, 1); // @ 0x10=0x7A
+  ctrl1=0x84;
+  f3d_pressure_write(&ctrl1, 0x20, 1); // @0x20=0x84
+  f3d_pressure_write(&ctrl2, 0x21, 1); // @0x21=0x01
+ 
 }
 
 
 void f3d_pressure_getdata(float *pData, float *tData) {
   uint8_t tmpbuffer[5] ={0}; // first 3 are pressure data, next 2 are temp data
-  int16_t RawData[2] = {0};
-  float sensitivity = 0;
-  int i = 0, BYTES_TO_READ = 5;
+  int16_t t_RawData=0; //signed 16
+  uint32_t p_RawData=0; //unsign 32
+ 
   f3d_pressure_read(tmpbuffer,0x28,5);
-  // Read the data for pressure and temp
-  // pressure
-	RawData[0] = (int16_t) ((int16_t) tmpbuffer[0] &
-													 (int16_t) tmpbuffer[1] &
-														(int16_t) tmpbuffer[2]);
-	*pData = RawData[0]/4096;
 
-	// temp
-	RawData[1] = (int16_t) ((int16_t) tmpbuffer[3] &
-													(int16_t) tmpbuffer[4]);
-	*tData = 42.5 + RawData[1]/480;
+  // pressure
+  p_RawData = ((uint32_t)tmpbuffer[2]<<16) | ((uint32_t)tmpbuffer[1]<<8) | tmpbuffer[0];
+  *pData = p_RawData/4096;
+ 
+  // temp
+  t_RawData = ((uint16_t) tmpbuffer[4]<<8) | tmpbuffer[3];
+  *tData = 42.5 + (t_RawData/480);
 }
 

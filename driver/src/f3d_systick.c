@@ -36,10 +36,17 @@
 #include <f3d_systick.h>
 #include <f3d_led.h>
 #include <f3d_uart.h>
+#include <f3d_gyro.h>
+#include <f3d_pressure.h>
 
 
 #define SYSTICK_INT_SEC 10
 
+int count=0;
+
+uint8_t ctrl2=0x01;
+float pressure, temp, gyro_buffer[2];
+float *gyro_ptr = gyro_buffer;
 
 volatile int systick_flag = 0;
 
@@ -61,6 +68,15 @@ void SysTick_Handler(void) {
   }
   systick_flag = 1;
 
+
+  f3d_pressure_write(&ctrl2, 0x21, 1);
+
+  f3d_pressure_getdata(&pressure, &temp);
+
+  //get data from gyro
+  f3d_gyro_getdata(&gyro_buffer[0]);
+  
+  
   if (!queue_empty(&txbuf)) {
     flush_uart();
   }

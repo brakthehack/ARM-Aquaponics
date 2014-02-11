@@ -20,4 +20,4 @@ static uint8_t f3d_pressure_sendbyte(uint8_t byte);
 void f3d_pressure_write(uint8_t* pBuffer, uint8_t WriteAddr, uint16_t NumByteToWrite);
 void f3d_pressure_read(uint8_t* pBuffer, uint8_t ReadAddr, uint16_t NumByteToRead);
 void f3d_pressure_init(void);
-void f3d_pressure_getdata(float *pData, float *tData);
+void f3d_pressure_getdata(float* pData, float* tData);
