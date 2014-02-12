@@ -52,7 +52,7 @@ int main(void) {
   setvbuf(stderr, NULL, _IONBF, 0);
 
   extern float temp, pressure, altitude, gyro_buffer[2];
-  #ifdef LOGGING
+  #if LOGGING
   extern uint8_t cacheIndex;
   extern float altitude_cache[];
   extern float gyro_cache[][2];
@@ -65,9 +65,7 @@ int main(void) {
 
     //f3d_pressure_getdata(&pressure, &temp);
     //printf("Temp (C): %d Pressure: %d\n",temp,pressure);
-
-    //printf("%f\n",altitude);
- 
+    printf("%f\n",altitude); 
     printf("x: %f y: %f z: %f\n", gyro_buffer[0], gyro_buffer[1], gyro_buffer[2]);
   }
 }

@@ -50,13 +50,13 @@ void SysTick_Handler(void) {
   }
   systick_flag = 1;
 
-  get_data(2); // store altitude data
+  get_data(1); // store altitude data
 
   //get data from gyro
   // since we are only collecting 1/10 as many samples, we can use less
   // space
   if (count++ % 10 == 0) {
-    get_data(1);
+    get_data(2);
   }
   if (!queue_empty(&txbuf)) {
     flush_uart();

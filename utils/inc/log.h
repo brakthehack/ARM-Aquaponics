@@ -15,7 +15,6 @@
 
 #include <stm32f30x.h>
 
-#define LOGGING 0
 #define LOG_SIZE 330
 #define GYRO_DATA 1
 #define PRESSURE_DATA 2
@@ -24,10 +23,8 @@
 uint8_t ctrl2=0x01;
 float pressure, temp, altitude, gyro_buffer[2];
 
-#ifdef LOGGING
 static uint8_t cacheIndex = 0;
 float altitude_cache[LOG_SIZE];
 float gyro_cache[LOG_SIZE / 10][2]; // REMEMBER TO CHANGE THIS IF SYSTIC CHNGS
-#endif
 
 void get_data(int i);
