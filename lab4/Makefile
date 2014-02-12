@@ -16,6 +16,8 @@ OBJS=  $(STARTUP) main.o \
 									f3d_pressure.o \
 									newlib_stubs.o \
 									queue.o \
+									pressure_utils.o \
+									log.o \
 									stm32f30x_rcc.o \
 									stm32f30x_gpio.o \
 									stm32f30x_usart.o \

@@ -13,16 +13,6 @@
  * 
  */
 
-/* Commentary: 
- * 
- * 
- * 
- */
-
-/* Change log:
- * 
- * 
- */
 
 /* Copyright (c) 2004-2007 The Trustees of Indiana University and 
  * Indiana University Research and Technology Corporation.  
@@ -36,32 +26,17 @@
 #include <f3d_systick.h>
 #include <f3d_led.h>
 #include <f3d_uart.h>
-#include <f3d_gyro.h>
-#include <f3d_pressure.h>
+#define SYSTICK_INT_SEC 10 // .1 second pulse 10Hz
 
-#include <pressure_utils.h>
-
-#define SYSTICK_INT_SEC 10
-#define LOGGING 1
-#define LOG_SIZE 330
-
-#ifdef LOGGING
-float altitude_cache[LOG_SIZE];
-float gyro_cache[LOG_SIZE][2];
-
-uint8_t ctrl2=0x01;
-float pressure, temp, gyro_buffer[2];
-float *gyro_ptr = gyro_buffer;
-#endif
+// buffers here
 
 volatile int systick_flag = 0;
-int count=0;
+volatile uint8_t count=0;
 
 void f3d_systick_init(void) {
   // setup systick rate of 100hz.
   SysTick_Config(SystemCoreClock/SYSTICK_INT_SEC);
 }
-
 
 void SysTick_Handler(void) {
   static state = 0;
@@ -75,21 +50,14 @@ void SysTick_Handler(void) {
   }
   systick_flag = 1;
 
-  if (LOGGING) {
-    static int cacheIndex = 0;
-    if (cacheIndex < LOG_SIZE) {
-      f3d_pressure_write(&ctrl2, 0x21, 1);
-      f3d_pressure_getdata(&pressure, &temp);
-      convert_to_altitude_ft(&pressure, &altitude_cache[cacheIndex]);
-      //get data from gyro
-      f3d_gyro_getdata(&gyro_buffer[0]);
-      gyro_cache[cacheIndex][0] = gyro_buffer[0];
-      gyro_cache[cacheIndex][1] = gyro_buffer[1];
-      gyro_cache[cacheIndex][2] = gyro_buffer[2];
-      cacheIndex++;
-    }
-  }
+  get_data(2); // store altitude data
 
+  //get data from gyro
+  // since we are only collecting 1/10 as many samples, we can use less
+  // space
+  if (count++ % 10 == 0) {
+    get_data(1);
+  }
   if (!queue_empty(&txbuf)) {
     flush_uart();
   }

@@ -12,17 +12,6 @@
  * Compatibility: 
  * 
  */
-
-/* Commentary: 
- * 
- * 
- * 
- */
-
-/* Change log:
- * 
- * 
- */
 /* Code: */
 
 #include <stm32f30x.h>  // Pull in include files for F30x standard drivers 
@@ -34,8 +23,6 @@
 #include <f3d_pressure.h>
 
 #include <stdio.h>
-
-#define LOGGING 1
 
 // Simple looping delay function
 void delay(void) {
@@ -64,26 +51,22 @@ int main(void) {
   setvbuf(stdout, NULL, _IONBF, 0);
   setvbuf(stderr, NULL, _IONBF, 0);
 
-  extern float temp, pressure;
-  uint8_t buffer;
-  extern float gyro_buffer[2];
-
-  float altitude;
-
+  extern float temp, pressure, altitude, gyro_buffer[2];
+  #ifdef LOGGING
+  extern uint8_t cacheIndex;
+  extern float altitude_cache[];
+  extern float gyro_cache[][2];
+  #endif 
   while (1) {
     
     //test whoami address, should print out BB
     //f3d_pressure_read(&buffer, 0x0F, 1);
     //printf("%x\n", buffer);
 
-    printf("a\n");
-
     //f3d_pressure_getdata(&pressure, &temp);
     //printf("Temp (C): %d Pressure: %d\n",temp,pressure);
 
-    Pressure_to_Altitude(&pressure, &altitude);
-
-    printf("%f\n",altitude);
+    //printf("%f\n",altitude);
  
     printf("x: %f y: %f z: %f\n", gyro_buffer[0], gyro_buffer[1], gyro_buffer[2]);
   }
