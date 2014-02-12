@@ -62,6 +62,8 @@ SYSTEM_FILE=$(LIBROOT)/Libraries/CMSIS/Device/ST/STM32F30x/Source/Templates
 STARTUP_FILE=$(LIBROOT)/Libraries/CMSIS/Device/ST/STM32F30x/Source/Templates/gcc_ride7
 ACCEL_GYRO=$(LIBROOT)/Utilities/STM32F3_Discovery
 LOCAL_DRIVERS=../driver
+DATA_STRUCTURES=../datastructures
+UTILS=$(TEMPLATEROOT)/utils
 FATFS =./ff9b
 NEWLIB_STUBS =../newlib
 
@@ -80,8 +82,10 @@ vpath %.s $(STARTUP_FILE)
 
 vpath %.c $(ACCEL_GYRO)
 vpath %.c $(LOCAL_DRIVERS)/src
+vpath %.c $(DATA_STRUCTURES)/src
 vpath %.c $(FATFS)/src
 vpath %.c $(NEWLIB_STUBS)
+vpath %.c $(UTILS)/src
 
 
 #  Processor specific
@@ -102,7 +106,9 @@ CFLAGS+= -I$(DEVICE)/Include -I$(CORE)
 CFLAGS+= -I$(LIBROOT)/Project/Peripheral_Examples/GPIO_IOToggle
 CFLAGS+= -I$(ACCEL_GYRO)
 CFLAGS+= -I$(LOCAL_DRIVERS)/inc
+CFLAGS+= -I$(DATA_STRUCTURES)/inc
 CFLAGS+= -I$(FATFS)/src
+CFLAGS+= -I$(UTILS)/inc
 CFLAGS+= -Wno-multichar
 
 # Build executable 
@@ -140,6 +146,9 @@ etags:
 	find $(CORE) -type f -iname "*.[ch]" | xargs etags --append
 	find $(ACCEL_GYRO) -type f -iname "*.[ch]" | xargs etags --append
 	find $(LOCAL_DRIVERS) -type f -iname "*.[ch]" | xargs etags --append
+	find $(DATA_STRUCTURES) -type f -iname "*.[ch]" | xargs etags --append
+	find $(UTILS) -type f -iname "*.[ch]" | xargs etags --append
+	find $(LIBROOT)/Project/Peripheral_Examples/GPIO_IOToggle -type f -iname "*.[ch]" | xargs etags --append
 	find $(LIBROOT)/Project/Peripheral_Examples/GPIO_IOToggle -type f -iname "*.[ch]" | xargs etags --append
 	find . -type f -iname "*.[ch]" | xargs etags --append
 

@@ -39,16 +39,23 @@
 #include <f3d_gyro.h>
 #include <f3d_pressure.h>
 
+#include <pressure_utils.h>
 
 #define SYSTICK_INT_SEC 10
+#define LOGGING 1
+#define LOG_SIZE 330
 
-int count=0;
+#ifdef LOGGING
+float altitude_cache[LOG_SIZE];
+float gyro_cache[LOG_SIZE][2];
 
 uint8_t ctrl2=0x01;
 float pressure, temp, gyro_buffer[2];
 float *gyro_ptr = gyro_buffer;
+#endif
 
 volatile int systick_flag = 0;
+int count=0;
 
 void f3d_systick_init(void) {
   // setup systick rate of 100hz.
@@ -68,15 +75,21 @@ void SysTick_Handler(void) {
   }
   systick_flag = 1;
 
+  if (LOGGING) {
+    static int cacheIndex = 0;
+    if (cacheIndex < LOG_SIZE) {
+      f3d_pressure_write(&ctrl2, 0x21, 1);
+      f3d_pressure_getdata(&pressure, &temp);
+      convert_to_altitude_ft(&pressure, &altitude_cache[cacheIndex]);
+      //get data from gyro
+      f3d_gyro_getdata(&gyro_buffer[0]);
+      gyro_cache[cacheIndex][0] = gyro_buffer[0];
+      gyro_cache[cacheIndex][1] = gyro_buffer[1];
+      gyro_cache[cacheIndex][2] = gyro_buffer[2];
+      cacheIndex++;
+    }
+  }
 
-  f3d_pressure_write(&ctrl2, 0x21, 1);
-
-  f3d_pressure_getdata(&pressure, &temp);
-
-  //get data from gyro
-  f3d_gyro_getdata(&gyro_buffer[0]);
-  
-  
   if (!queue_empty(&txbuf)) {
     flush_uart();
   }

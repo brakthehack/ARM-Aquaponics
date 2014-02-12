@@ -33,9 +33,9 @@
 #include <f3d_systick.h>
 #include <f3d_pressure.h>
 
-#include <math.h>
 #include <stdio.h>
 
+#define LOGGING 1
 
 // Simple looping delay function
 void delay(void) {
@@ -52,21 +52,12 @@ void assert_failed(uint8_t* file, uint32_t line) {
 }
 #endif
 
-void Pressure_to_Altitude(float* Pressure_mb, float* Altitude_ft) {
-  //=(1-(A18/1013.25)^0.190284)*145366.45
-  *Altitude_ft = (1-pow(*Pressure_mb/1013.25,0.190284))*145366.45;
-}
-
-
 int main(void) { 
   f3d_uart_init();
   f3d_led_init();
   f3d_button_init();
   f3d_gyro_init();
-
   f3d_pressure_init();
-
-  delay();
   f3d_systick_init();
 
   setvbuf(stdin, NULL, _IONBF, 0);
