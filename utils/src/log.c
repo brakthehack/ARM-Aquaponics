@@ -22,32 +22,35 @@
 /*
  * get_data takes an int to check what kind of data needs to
  * be put into the buffer
+ * Gyro = 1
  * Pressure & temp = 2
- * gyro = 1
+ * ALL = 3
  */
 
+uint8_t altIndex = 0;  // current log index for altitude
+uint8_t gyroIndex = 0;  // current log index for gyro
+
 void get_data(int i) {
-  if (i == 1) { // store gyro
+  if (i & 1) { // store gyro
     f3d_gyro_getdata(&gyro_buffer[0]);
   }
-  if (i == 2) { // store pressure and temp, convert to altitude
+  if ((i >> 1) & 1) { // store pressure and temp, convert to altitude
+    uint8_t ctrl2=0x01;
     f3d_pressure_write(&ctrl2, 0x21, 1);
     f3d_pressure_getdata(&pressure, &temp);
     convert_to_altitude_ft(&pressure, &altitude);
   }
 }
 
+#if LOGGING
 void log_data(int i) {
-   if (cacheIndex < LOG_SIZE && i & 1) {
-      gyro_cache[cacheIndex / 10][0] = gyro_buffer[0];
-      gyro_cache[cacheIndex / 10][1] = gyro_buffer[1];
-      gyro_cache[cacheIndex / 10][2] = gyro_buffer[2];
+   if ((gyroIndex < LOG_SIZE) && (i & 1)) {
+      gyro_cache[gyroIndex][0] = gyro_buffer[0];
+      gyro_cache[gyroIndex][1] = gyro_buffer[1];
+      gyro_cache[gyroIndex++][2] = gyro_buffer[2];
     }
-    if (cacheIndex < LOG_SIZE && (i >> 1) & 1) {
-      altitude_cache[cacheIndex] = altitude;
-    }
-    if (cacheIndex < LOG_SIZE) {
-      cacheIndex++;
+    if ((altIndex < LOG_SIZE / 10) && ((i >> 1) & 1)) {
+      altitude_cache[altIndex++] = altitude;
     }
 }
-
+#endif

@@ -32,7 +32,6 @@
 #include <f3d_gyro.h>
 #include <stdio.h>
 
-
 // Simple looping delay function
 void delay(void) {
   int i = 2000000;

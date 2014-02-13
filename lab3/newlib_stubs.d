@@ -28,4 +28,4 @@ newlib_stubs.o: ../newlib/newlib_stubs.c \
  /l/arm2/STM32F3-Discovery_FW_V1.1.0/Libraries/STM32F30x_StdPeriph_Driver/inc/stm32f30x_tim.h \
  /l/arm2/STM32F3-Discovery_FW_V1.1.0/Libraries/STM32F30x_StdPeriph_Driver/inc/stm32f30x_wwdg.h \
  /l/arm2/STM32F3-Discovery_FW_V1.1.0/Libraries/STM32F30x_StdPeriph_Driver/inc/stm32f30x_misc.h \
- ../driver/inc/f3d_uart.h
+ ../driver/inc/f3d_uart.h ../datastructures/inc/queue.h

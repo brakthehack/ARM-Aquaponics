@@ -32,6 +32,7 @@
 
 volatile int systick_flag = 0;
 volatile uint8_t count=0;
+uint8_t startLog = 0;
 
 void f3d_systick_init(void) {
   // setup systick rate of 100hz.
@@ -49,15 +50,19 @@ void SysTick_Handler(void) {
     f3d_led_off(0);
   }
   systick_flag = 1;
-
-  get_data(1); // store altitude data
-
-  //get data from gyro
-  // since we are only collecting 1/10 as many samples, we can use less
-  // space
-  if (count++ % 10 == 0) {
-    get_data(2);
+/*
+  get_data(1); // store gyro data
+  if (startLog) {
+    log_data(1); // log gyro data
   }
+  // since we are only collecting 1/10 as many samples, we can use less space
+  if (count++ % 10 == 0) {
+    get_data(2); // get altitude data
+    if (startLog) {
+      log_data(2); // log altitude data
+    }
+  }
+*/
   if (!queue_empty(&txbuf)) {
     flush_uart();
   }
