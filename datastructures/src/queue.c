@@ -45,8 +45,7 @@
 
 /* Code: */
 
-#include "queue.h"
-#include <stdio.h>
+#include <queue.h>
 
 void init_queue(queue_t *buf) {
   buf->head = buf->tail = 0;
@@ -72,50 +71,3 @@ int dequeue (queue_t *buf) {
 int queue_empty(queue_t *buf) {
   return buf->head == buf->tail ? 1 : 0;
 }
-/*
-void printqueue(queue_t *queue) {
-  int i = dequeue(queue);
-  int j = 1;
-  while (i) {
-    printf("Element %d: %d\n", j++, i);
-    i = dequeue(queue);
-  }
-}
-
-int main(int argc, char **argv) {
- queue_t queue;
- init_queue(&queue);
- int i = 0;
- //printqueue(&queue);
- for (i = 0; i < QUEUE_SIZE / 2; i++) {
-  //printf("Empty Q? %d\n", queue_empty(&queue));
-   /*if (enqueue(&queue, i)) {
-     printf("ding \n");
-   } else {
-     printf("fail \n");
-   }
- } 
-  enqueue(&queue, i * 2);
-}
-  printf("Head: %d\n Tail: %d\n", queue.head, queue.tail);
-  enqueue(&queue, 224);
-  dequeue(&queue);
-  dequeue(&queue);
-  dequeue(&queue);
-  dequeue(&queue);
-  while (dequeue(&queue));
-  enqueue(&queue, 6969);
-  enqueue(&queue, 2901);
-  enqueue(&queue, 1111);
-  enqueue(&queue, 4);
-  enqueue(&queue, 77);
-  enqueue(&queue, 1);
-  for (i = 0; i < QUEUE_SIZE; i++) {
-    printf("%d\n", enqueue(&queue, i));
-  }
-  enqueue(&queue, 1);
-  printf("Head: %d\n Tail: %d\n", queue.head, queue.tail);
-  printqueue(&queue); 
-}
-*/
-/* queue.c ends here */

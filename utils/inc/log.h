@@ -16,17 +16,15 @@
 #include <stm32f30x.h>
 
 #define LOGGING 1 // toggle logging to save space on stm
-#define LOG_SIZE 330
+#define LOG_SIZE 3000
 #define GYRO_DATA 1
 #define PRESSURE_DATA 2
 
 // buffers here
 float pressure, temp, altitude, gyro_buffer[2];
-#if LOGGING
 float altitude_cache[LOG_SIZE / 10];
 float gyro_cache[LOG_SIZE][2]; // REMEMBER TO CHANGE THIS IF SYSTIC CHNGS
                                     // also need to change in log_data in cfile
 void log_data(int i);
-#endif
 
 void get_data(int i);

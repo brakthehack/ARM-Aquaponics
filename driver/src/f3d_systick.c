@@ -50,7 +50,7 @@ void SysTick_Handler(void) {
     f3d_led_off(0);
   }
   systick_flag = 1;
-/*
+
   get_data(1); // store gyro data
   if (startLog) {
     log_data(1); // log gyro data
@@ -62,7 +62,7 @@ void SysTick_Handler(void) {
       log_data(2); // log altitude data
     }
   }
-*/
+
   if (!queue_empty(&txbuf)) {
     flush_uart();
   }
