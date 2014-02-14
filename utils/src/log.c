@@ -27,16 +27,16 @@
  * ALL = 3
  */
 
-uint8_t altIndex = 0;  // current log index for altitude
-uint8_t gyroIndex = 0;  // current log index for gyro
+uint32_t altIndex = 0;  // current log index for altitude
+uint32_t gyroIndex = 0;  // current log index for gyro
 
 void get_data(int i) {
   if (i & 1) { // store gyro
     f3d_gyro_getdata(&gyro_buffer[0]);
   }
   if ((i >> 1) & 1) { // store pressure and temp, convert to altitude
-    uint8_t ctrl2=0x01;
-    f3d_pressure_write(&ctrl2, 0x21, 1);
+    // uint8_t ctrl2=0x01;
+    // f3d_pressure_write(&ctrl2, 0x21, 1);
     f3d_pressure_getdata(&pressure, &temp);
     convert_to_altitude_ft(&pressure, &altitude);
   }

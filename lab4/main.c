@@ -39,8 +39,8 @@ void assert_failed(uint8_t* file, uint32_t line) {
 }
 #endif
 
-extern uint8_t gyroIndex;
-extern uint8_t altIndex;
+extern uint32_t gyroIndex;
+extern uint32_t altIndex;
 
 void dump_cache(void) {
   int i;
@@ -69,6 +69,8 @@ int main(void) {
   extern uint8_t startLog;
   char c;
 
+  extern int reset_count;
+
   while (1) {
     //putchar(c = readchar());
     //test whoami address, should print out BB
@@ -76,18 +78,23 @@ int main(void) {
     //printf("%x\n", buffer);
 
     //f3d_pressure_getdata(&pressure, &temp);
-    //printf("Temp (C): %d Pressure: %d\n",temp,pressure);
+    //printf("Temp (C): %f Pressure: %f\n",temp,pressure);
     /*
     if (c == 'd') {
       printf("Dumping cache...\n");
       dump_cache();
     }*/
     // press the button to start and stop logging
+
+    //printf("%d %d\n",gyroIndex,altIndex);
     if (f3d_button_read()) {
       delay(); // prevent against button being double pressed
-      if (!startLog) {
+      if (!startLog||reset_count>=15) {
         gyroIndex=0;
         altIndex=0;
+	if(reset_count>=15){
+	  printf("Collecting Reset\n");
+	}
         printf("Log Start\n");
       } else {
         printf("Log Stop\n");

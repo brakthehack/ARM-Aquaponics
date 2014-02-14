@@ -33,6 +33,7 @@
 volatile int systick_flag = 0;
 volatile uint8_t count=0;
 uint8_t startLog = 0;
+int reset_count=0;
 
 void f3d_systick_init(void) {
   // setup systick rate of 100hz.
@@ -42,13 +43,21 @@ void f3d_systick_init(void) {
 void SysTick_Handler(void) {
   static state = 0;
   state ^= 1;
-  if (state)  {
-    //GPIOE->BSRR = 0x8000;
-    f3d_led_on(0);
-  } else {
-    //GPIOE->BRR = 0x8000;
-    f3d_led_off(0);
+
+  if(startLog){
+    if (state)  {
+      //GPIOE->BSRR = 0x8000;
+      f3d_led_on(0);
+    } else {
+      //GPIOE->BRR = 0x8000;
+      f3d_led_off(0);
+    }
   }
+
+  if(!startLog){
+    f3d_led_all_off();
+  }
+
   systick_flag = 1;
 
   get_data(1); // store gyro data
@@ -65,6 +74,14 @@ void SysTick_Handler(void) {
 
   if (!queue_empty(&txbuf)) {
     flush_uart();
+  }
+
+  if(f3d_button_read()){
+    reset_count++;
+  }
+
+  if(!f3d_button_read()){
+    reset_count=0;
   }
 }
 

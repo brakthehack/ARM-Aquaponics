@@ -120,15 +120,29 @@ void f3d_pressure_getdata(float *pData, float *tData) {
   uint8_t tmpbuffer[5] ={0}; // first 3 are pressure data, next 2 are temp data
   int16_t t_RawData=0; //signed 16
   uint32_t p_RawData=0; //unsign 32
- 
+  uint8_t reset = 1;
+
+  uint8_t ctrl2 = 0x01;
+
+  f3d_pressure_write(&ctrl2, 0x21, 1); // @0x21=0x01
+
+  // getchar();
+
   f3d_pressure_read(tmpbuffer,0x28,5);
 
+  while (reset) {
+  f3d_pressure_read(&reset, 0x21, 1);
+   }
+
   // pressure
-  p_RawData = ((uint32_t)tmpbuffer[2]<<16) | ((uint32_t)tmpbuffer[1]<<8) | tmpbuffer[0];
-  *pData = p_RawData/4096;
+  p_RawData = (uint32_t) tmpbuffer[0];
+  p_RawData |= ((uint32_t)tmpbuffer[1])<<8;
+  p_RawData |=  ((uint32_t)tmpbuffer[2])<<16;
+  *pData = p_RawData/4096.00;
  
   // temp
-  t_RawData = ((uint16_t) tmpbuffer[4]<<8) | tmpbuffer[3];
-  *tData = 42.5 + (t_RawData/480);
+  t_RawData = (uint16_t)  tmpbuffer[3];
+  t_RawData |= ((uint16_t) tmpbuffer[4])<<8;
+  *tData = 42.5 + (t_RawData/480.00);
 }
 
