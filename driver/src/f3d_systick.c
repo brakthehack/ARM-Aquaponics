@@ -25,15 +25,17 @@
 /* Code: */
 #include <f3d_systick.h>
 #include <f3d_led.h>
+#include <f3d_buzzer.h>
 #include <f3d_uart.h>
-#define SYSTICK_INT_SEC 10 // .1 second pulse 10Hz
+#define SYSTICK_INT_SEC 100 // .1 second pulse 10Hz
 
 // buffers here
-
+/*
 volatile int systick_flag = 0;
 volatile uint8_t count=0;
 uint8_t startLog = 0;
 int reset_count=0;
+*/
 
 void f3d_systick_init(void) {
   // setup systick rate of 100hz.
@@ -41,9 +43,17 @@ void f3d_systick_init(void) {
 }
 
 void SysTick_Handler(void) {
-  static state = 0;
-  state ^= 1;
-
+    static state = 0;
+    state ^= 1;
+    if (state) {
+        //f3d_buzzer_on();
+        f3d_led_all_on();
+    }
+    else {
+        //f3d_buzzer_off();
+        f3d_led_all_off();
+    }
+/*
   if(startLog){
     if (state)  {
       //GPIOE->BSRR = 0x8000;
@@ -83,6 +93,7 @@ void SysTick_Handler(void) {
   if(!f3d_button_read()){
     reset_count=0;
   }
+  */
 }
 
 /* f3d_systick.c ends here */

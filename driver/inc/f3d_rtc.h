@@ -17,3 +17,4 @@
 
 int LSE_init(void);
 int RTC_init(void);
+int rtc_settime(char *buffer);

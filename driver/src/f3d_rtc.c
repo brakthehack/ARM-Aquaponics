@@ -55,3 +55,47 @@ int RTC_init(void) {
     }
 }
 
+int rtc_settime (char *buf) {
+    enum {HOUR,MINUTE,SECOND,MONTH,DAY,YEAR};
+    RTC_TimeTypeDef t;
+    RTC_DateTypeDef d;
+    char *tok_start = buf;
+    char *tok_end = buf;
+    int field = HOUR;
+    RTC_TimeStructInit(&t);
+    RTC_DateStructInit(&d);
+    while (field<=YEAR) {
+        while ((*tok_end != ',') && (*tok_end)) {
+            tok_end++;
+        }
+        *tok_end = 0;
+        switch (field++) {
+            case HOUR:
+            t.RTC_Hours=atoi(tok_start);
+            printf("hour = %d\n",t.RTC_Hours);
+            break;
+            case MINUTE:
+            t.RTC_Minutes=atoi(tok_start);
+            printf("min = %d\n",t.RTC_Minutes);
+            break;
+            case SECOND:
+            t.RTC_Seconds=atoi(tok_start);
+            printf("sec = %d\n",t.RTC_Seconds);
+            break;
+            case MONTH:
+            d.RTC_Month=atoi(tok_start);
+            printf("month = %d\n",d.RTC_Month);
+            break;
+            case DAY:
+            d.RTC_Date=atoi(tok_start);
+            printf("day = %d\n",d.RTC_Date);
+            break;
+            case YEAR:
+            d.RTC_Year=atoi(tok_start) - 2000;
+            printf("year = %d\n",d.RTC_Year);
+            break;
+        }
+        tok_end++;
+        tok_start=tok_end;
+    }
+}
