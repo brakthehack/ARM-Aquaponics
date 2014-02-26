@@ -43,8 +43,11 @@ void f3d_systick_init(void) {
 }
 
 void SysTick_Handler(void) {
+
     static state = 0;
     state ^= 1;
+
+    /*
     if (state) {
         //f3d_buzzer_on();
         f3d_led_all_on();
@@ -53,7 +56,10 @@ void SysTick_Handler(void) {
         //f3d_buzzer_off();
         f3d_led_all_off();
     }
-/*
+
+    */
+
+    /*
   if(startLog){
     if (state)  {
       //GPIOE->BSRR = 0x8000;
@@ -82,10 +88,6 @@ void SysTick_Handler(void) {
     }
   }
 
-  if (!queue_empty(&txbuf)) {
-    flush_uart();
-  }
-
   if(f3d_button_read()){
     reset_count++;
   }
@@ -93,7 +95,14 @@ void SysTick_Handler(void) {
   if(!f3d_button_read()){
     reset_count=0;
   }
-  */
+    */
+
+  if (!queue_empty(&txbuf)) {
+    flush_uart();
+  }
+
+
+  
 }
 
 /* f3d_systick.c ends here */

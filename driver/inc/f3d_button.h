@@ -48,5 +48,6 @@
 
 void f3d_button_init();
 uint8_t f3d_button_read();
+uint8_t f3d_extra_button();
 
 /* ds_button.h ends here */
