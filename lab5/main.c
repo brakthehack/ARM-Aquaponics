@@ -156,7 +156,8 @@ int main(void) {
   //Hour,Minute,Second,Month,Day,Year
 
  
-  if(f3d_button_read(){
+  if(f3d_button_read()){
+      RTC_init();
     printf("RTC Code Start\n");
     printf("@\n");
     
@@ -171,6 +172,8 @@ int main(void) {
   
   f3d_frequency(buzzer);
 
+
+ 
   while (1) {
 
     RTC_GetTime(RTC_Format_BIN,&RTC_TimeStructure);
