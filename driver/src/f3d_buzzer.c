@@ -47,7 +47,15 @@ static void f3d_timer4_pins(void) {
  
 }
 
+void buzzer_switch(int buzzer){
+  if(buzzer==0){
+    GPIOD->BRR;
+  }
 
+  else {
+    GPIOD->BSRR;
+  }
+}
 
 
 

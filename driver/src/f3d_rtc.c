@@ -15,57 +15,54 @@
 
 #include <f3d_rtc.h>
 
-/* int LSE_init (void) { */
-/* RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE); */
-/* PWR_BackupAccessCmd(ENABLE); */
-/* RCC_LSEDriveConfig(RCC_LSEDrive_Low); */
-/* RCC_LSEConfig(RCC_LSE_ON); */
-/* while (RCC_GetFlagStatus(RCC_FLAG_LSERDY) == RESET); */
-/* PWR_BackupAccessCmd(DISABLE); */
-/* return 0; */
-/* } */
+/*
+ int LSE_init (void) { 
+   RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE); 
+   PWR_BackupAccessCmd(ENABLE); 
+   RCC_LSEDriveConfig(RCC_LSEDrive_Low); 
+   RCC_LSEConfig(RCC_LSE_ON); 
+   while (RCC_GetFlagStatus(RCC_FLAG_LSERDY) == RESET); 
+   PWR_BackupAccessCmd(DISABLE); 
+   return 0; 
+ } 
 
-/* int RTC_init(void) { */
-/* RTC_TimeTypeDef RTC_TimeStructure; */
-/* RTC_DateTypeDef RTC_DateStructure; */
-/* RTC_InitTypeDef RTC_InitStructure; */
 
-/* RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE); */
-/* PWR_BackupAccessCmd(ENABLE); */
-/* // printf("%04x\n",(uint32_t)(RTC->ISR)); */
+void RTC_init(void) {
+  RTC_TimeTypeDef RTC_TimeStructure;
+  RTC_DateTypeDef RTC_DateStructure;
+  RTC_InitTypeDef RTC_InitStructure;
+  
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE);
+  PWR_BackupAccessCmd(ENABLE);
+  RCC_BackupResetCmd(ENABLE);
+  RCC_BackupResetCmd(DISABLE);
+  RCC_LSEDriveConfig(RCC_LSEDrive_High);
+  RCC_LSEConfig(RCC_LSE_ON);
+  printf("Prim: before LSE Init\n");
+  while (RCC_GetFlagStatus(RCC_FLAG_LSERDY) == RESET);
+  printf("Prim: after LSE Init\n");
+  RCC_RTCCLKConfig(RCC_RTCCLKSource_LSE);
+  RCC_RTCCLKCmd(ENABLE);
 
-/* if (RTC_GetFlagStatus(RTC_FLAG_RSF) == SET) { */
-/* printf("Warm Boot\n"); */
-/* } */
-/* else { */
-/* printf("Cold Reset\n"); */
-/* RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE); */
-/* PWR_BackupAccessCmd(ENABLE); */
-/* RCC_BackupResetCmd(ENABLE); */
-/* RCC_BackupResetCmd(DISABLE); */
-/* RCC_LSEDriveConfig(RCC_LSEDrive_High); */
-/* RCC_LSEConfig(RCC_LSE_ON); */
+  RTC_WriteProtectionCmd(DISABLE); // Disable the RTC's write protection
+  RTC_EnterInitMode();
+  RTC_WaitForSynchro();
 
-/* printf("before LSE Init\n"); */
-/* while (RCC_GetFlagStatus(RCC_FLAG_LSERDY) == RESET); */
-/* printf("After LSE Init\n"); */
-    
-/* RCC_RTCCLKConfig(RCC_RTCCLKSource_LSE); */
-/* RCC_RTCCLKCmd(ENABLE); */
-/* RTC_WaitForSynchro(); */
-    
-/* RTC_StructInit(&RTC_InitStructure); */
-/* RTC_Init(&RTC_InitStructure); */
-    
-/* RTC_DateStructInit(&RTC_DateStructure); */
-/* RTC_SetDate(RTC_Format_BCD, &RTC_DateStructure); */
-    
-/* RTC_TimeStructInit(&RTC_TimeStructure); */
-/* RTC_SetTime(RTC_Format_BIN, &RTC_TimeStructure); */
-    
-/* PWR_BackupAccessCmd(DISABLE); */
-/* } */
-/* } */
+  RTC_StructInit(&RTC_InitStructure);
+  RTC_Init(&RTC_InitStructure);
+  
+  RTC_DateStructInit(&RTC_DateStructure);
+  RTC_SetDate(RTC_Format_BCD, &RTC_DateStructure);
+  
+  RTC_TimeStructInit(&RTC_TimeStructure);
+  RTC_SetTime(RTC_Format_BIN, &RTC_TimeStructure);
+  
+  RTC_ExitInitMode();
+  RTC_WriteProtectionCmd(ENABLE);
+  PWR_BackupAccessCmd(DISABLE);
+}
+*/
+
 
 void RTC_init(void) {
   RTC_TimeTypeDef RTC_TimeStructure;
@@ -79,15 +76,16 @@ void RTC_init(void) {
 
   PWR_BackupAccessCmd(ENABLE);
 
-  /* LSI used as RTC source clock*/
+  // LSI used as RTC source clock
   RCC_LSICmd(ENABLE);
   
-  /* Wait till LSI is ready */
+  // Wait till LSI is ready 
   while(RCC_GetFlagStatus(RCC_FLAG_LSIRDY) == RESET);
   
   RCC_RTCCLKConfig(RCC_RTCCLKSource_LSI);
   RCC_RTCCLKCmd(ENABLE);
   RTC_WaitForSynchro();
+  
   
   RTC_StructInit(&RTC_InitStructure); // Set the structure members to their default values
   RTC_InitStructure.RTC_HourFormat = RTC_HourFormat_24;
@@ -95,6 +93,7 @@ void RTC_init(void) {
   RTC_InitStructure.RTC_SynchPrediv = 470;
   RTC_Init(&RTC_InitStructure);
 
+  
   RTC_DateStructure.RTC_Year = 13;
   RTC_DateStructure.RTC_Month = RTC_Month_November;
   RTC_DateStructure.RTC_Date = 7;
@@ -106,6 +105,7 @@ void RTC_init(void) {
   RTC_TimeStructure.RTC_Minutes = 0x05;
   RTC_TimeStructure.RTC_Seconds = 0x00;
   RTC_SetTime(RTC_Format_BIN, &RTC_TimeStructure);
+  
 }
 
 
