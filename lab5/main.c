@@ -157,7 +157,6 @@ int main(void) {
 
  
   if(f3d_button_read()){
-      RTC_init();
     printf("RTC Code Start\n");
     printf("@\n");
     
