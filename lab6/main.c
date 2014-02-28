@@ -1,29 +1,13 @@
 /* main.c --- 
  * 
  * Filename: main.c
- * Description: 
- * Author: 
- * Maintainer: 
- * Created: Thu Jan 10 11:23:43 2013
+ * Description: Lab6 - Logging the RTC on the SD card
+ * Author: Ching Yuen Ng, Brian Rak
+ * Maintainer: brak, ching
+ * Created: Feb 28, 2014
  * Last-Updated: 
  *           By: 
- *     Update #: 0
- * Keywords: 
- * Compatibility: 
- * 
  */
-
-/* Commentary: 
- * 
- * 
- * 
- */
-
-/* Change log:
- * 
- * 
- */
-/* Code: */
 
 #include <stm32f30x.h>  // Pull in include files for F30x standard drivers 
 #include <f3d_led.h>     // Pull in include file for the local drivers

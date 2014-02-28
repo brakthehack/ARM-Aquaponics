@@ -42,8 +42,8 @@ int spiReadWrite16(SPI_TypeDef *SPIx, uint16_t *rbuf,
 void f3d_sdcard_readwrite(uint8_t *, uint8_t *, int);
 uint32_t get_fattime(void);
 void die (FRESULT);
-
-
+static void xmit_mmc(const BYTE* buff, UINT bc);
+static void rcvr_mmc (BYTE *buff, UINT bc);
 
 /* f3d_sdcard.h ends here */
 

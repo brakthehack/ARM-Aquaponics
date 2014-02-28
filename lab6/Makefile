@@ -1,5 +1,4 @@
 TEMPLATEROOT = ..
-# POLLED = 1
 
 # compilation flags for gdb
 
@@ -8,28 +7,31 @@ ASFLAGS = -g
 
 # object files
 
-OBJS= $(STARTUP) main.o \
-                 f3d_led.o \
-                 f3d_button.o \
-                 f3d_uart.o \
-                 f3d_systick.o \
-                 queue.o \
-                 f3d_delay.o \
-                 f3d_sdcard.o \
-                 stm32f30x_spi.o \
-                 stm32f30x_rcc.o \
-                 stm32f30x_gpio.o \
-                 stm32f30x_usart.o \
-                 stm32f30x_pwr.o \
-                 stm32f30x_rtc.o \
-                 stm32f30x_misc.o \
-                 stm32f30x_tim.o \
-                 ff.o \
-                 mmcbb.o \
-                 newlib_stubs.o
+OBJS=  $(STARTUP) main.o \
+	   f3d_led.o \
+	   f3d_uart.o \
+	   f3d_button.o \
+	   f3d_systick.o \
+	   f3d_rtc.o \
+	   f3d_pressure.o \
+	   f3d_gyro.o \
+	   f3d_buzzer.o \
+	   f3d_sdcard.o \
+	   f3d_delay.o \
+	   log.o \
+	   pressure_utils.o \
+	   newlib_stubs.o \
+	   queue.o \
+	   ff.o \
+	   mmcbb.o \
+	   stm32f30x_rcc.o \
+	   stm32f30x_gpio.o \
+	   stm32f30x_usart.o \
+	   stm32f30x_spi.o \
+	   stm32f30x_tim.o \
+	   stm32f30x_misc.o \
+	   stm32f30x_pwr.o \
+	   stm32f30x_rtc.o
 
 # include common make file
-
 include $(TEMPLATEROOT)/Makefile.common
-
-
