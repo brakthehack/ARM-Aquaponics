@@ -65,6 +65,7 @@ LOCAL_DRIVERS=../driver
 DATA_STRUCTURES=../datastructures
 UTILS=$(TEMPLATEROOT)/utils
 FATFS =./ff9b
+FATFS =../ff9b
 NEWLIB_STUBS =../newlib
 
 # Search path for standard files

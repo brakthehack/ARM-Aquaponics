@@ -128,7 +128,6 @@ int main(void) {
   f3d_systick_init();
   f3d_led_init();
   f3d_button_init();
-  RTC_init();
   f3d_timer4_init();
   
 
@@ -157,6 +156,7 @@ int main(void) {
 
  
   if(f3d_button_read()){
+    RTC_init();
     printf("RTC Code Start\n");
     printf("@\n");
     
