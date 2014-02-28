@@ -55,6 +55,17 @@ void f3d_button_init() {
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
   RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);
   GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+  // Configure PD13 as an Inputs, extra button
+  GPIO_StructInit(&GPIO_InitStructure);
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP ;
+  GPIO_Init(GPIOD, &GPIO_InitStructure);
+
+ 
+  GPIO_PinAFConfig(GPIOD, GPIO_PinSource13, GPIO_AF_2);
 }
 
 //return the button state, either 1 or 0
@@ -64,4 +75,10 @@ uint8_t f3d_button_read() {
   return button_state;
 }
 
+uint8_t f3d_extra_button(){
+  uint8_t button_state = 0x00;
+  button_state = GPIO_ReadInputDataBit(GPIOD,GPIO_Pin_13);
+  button_state ^= 1;
+  return button_state;
+}
 /* f3d_button.c ends here */
