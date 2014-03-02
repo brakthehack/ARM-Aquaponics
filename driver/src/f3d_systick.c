@@ -35,35 +35,47 @@ volatile int systick_flag = 0;
 volatile uint8_t count=0;
 uint8_t startLog = 0;
 */
-
-
-
 int hold_count=0;
 
+/*
+ * User button State
+ */
+extern uint8_t button_check_state, button_check_state2;
+extern volatile uint16_t button_state, button_state2;
+extern volatile uint16_t time_passed, time_passed2;
 
 void f3d_systick_init(void) {
-  // setup systick rate of 100hz.
-  SysTick_Config(SystemCoreClock/SYSTICK_INT_SEC);
+    // setup systick rate of 100hz.
+    SysTick_Config(SystemCoreClock/SYSTICK_INT_SEC);
 }
 
 void SysTick_Handler(void) {
+    // changes the state machine for user button presses
+    if (button_check_state) {
+        uint8_t cur_state = f3d_button_read();
+        button_state = cur_state ? button_state + cur_state : 0;
+        time_passed++;
+    }
+    if (button_check_state2) {
+        uint8_t cur_state2 = f3d_extra_button();
+        button_state2 = cur_state2 ? button_state2 + cur_state2 : 0;
+        time_passed2++;
+    }
+
+    // end button press state machine
+
+    if(f3d_button_read()){
+        hold_count++;
+    }
+
+    if(!f3d_button_read()){
+        hold_count=0;
+    }
 
 
-  if(f3d_button_read()){
-    hold_count++;
-  }
-
-  if(!f3d_button_read()){
-    hold_count=0;
-  }
-    
-
-  if (!queue_empty(&txbuf)) {
-    flush_uart();
-  }
-
-
-  
+    if (!queue_empty(&txbuf)) {
+        flush_uart();
+    }
 }
 
 /* f3d_systick.c ends here */

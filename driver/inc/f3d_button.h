@@ -2,28 +2,13 @@
  * 
  * Filename: f3d_button.h
  * Description: 
- * Author: Bryce Himebaugh
- * Maintainer: 
- * Created: Thu Jan 17 16:30:09 2013 (-0500)
+ * Author: Brian Rak
+ * Maintainer: brak
+ * Created: 03/01/2014
  * Version: 
- * Last-Updated: 
+ * Last-Updated: 03/01/2014
  *           By: 
  *     Update #: 0
- * URL: 
- * Doc URL: 
- * Keywords: 
- * Compatibility: 
- * 
- */
-
-/* Commentary: 
- * 
- * 
- * 
- */
-
-/* Change Log:
- * 
  * 
  */
 
@@ -46,8 +31,18 @@
 /* Code: */
 #include <stm32f30x.h>
 
+#define BUTTON_SENSITIVITY 5
+#define BUTTON_TIMEOUT 15
+
+extern uint8_t button_check_state, button_check_state2;
+extern volatile uint16_t button_state, button_state2;
+extern volatile uint16_t time_passed, time_passed2;
+
 void f3d_button_init();
 uint8_t f3d_button_read();
 uint8_t f3d_extra_button();
-
-/* ds_button.h ends here */
+uint8_t f3d_button_state_read(
+        uint8_t *btn_check_state,
+        volatile uint16_t *button_state, // counter
+        volatile uint16_t *time_passed);
+/* f3d_button.h ends here */
