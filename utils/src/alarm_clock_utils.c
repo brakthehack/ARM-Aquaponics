@@ -14,9 +14,10 @@
  */
 
 /* Display the minutes on the LED
- */
+*/
 
 #include <alarm_clock_utils.h>
+#include <f3d_led.h>
 
 void f3d_led_min_display(int mins){
     f3d_led_all_off();
@@ -107,8 +108,52 @@ void hour_right(int n){
 /* Enters the set alarm mode (as requested by the user)
  * Note: the default implementation is f3d_button_read
  */
-void set_alarm(void) {
-    
+void set_alarm(int *set_unit, int *set_hr, int *set_min, int *hold_count) {
+    if(f3d_button_read()){
+        set_unit^=1;
+        if(set_unit==0){
+            f3d_led_all_on();
+            delay();
+            f3d_led_all_off();
+            printf("hr\n");
+        }
+        else{
+            f3d_led_all_on();
+            delay();
+            f3d_led_all_off();
+            delay();
+            f3d_led_all_on();
+            delay();
+            f3d_led_all_off();
+            printf("min\n");
+        }
+
+    }
+    // hour mode
+    if(set_unit==0){
+        if(f3d_extra_button()){
+            set_hr++;
+            f3d_led_hr_display(set_hr);
+        }
+    }
+    if(set_unit==1){
+        if(f3d_extra_button()){
+            set_min++;
+            f3d_led_min_display(set_min);
+        }
+    }
+    // exit the set mode
+    if(hold_count>=200){
+        mode=0;
+        f3d_led_all_off();
+        f3d_led_on(1);
+        f3d_led_on(2);
+        f3d_led_on(3);
+        f3d_led_all_off();
+        break;
+    }
+
+
 }
 
 void read_time(TimeStruct *time) {

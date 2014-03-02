@@ -117,14 +117,12 @@ uint8_t f3d_button_state_read(uint8_t *btn_check_state,
 
 //return the button state, either 1 or 0
 uint8_t f3d_button_read() {
-  uint8_t btn_state = 0x00;
-  btn_state = GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_0);
-  return btn_state;
+  //uint8_t btn_state = GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_0);
+  return f3d_button_state_read(&button_check_state, &button_state, &time_passed);
 }
 
 uint8_t f3d_extra_button(){
-  uint8_t btn_state = 0x00;
-  btn_state = GPIO_ReadInputDataBit(GPIOD,GPIO_Pin_13);
-  return btn_state ^ 1;
+  //uint8_t btn_state = GPIO_ReadInputDataBit(GPIOD,GPIO_Pin_13) ^ 1;
+  return f3d_button_state_read(&button_check_state2, &button_state2, &time_passed2);
 }
 /* f3d_button.c ends here */

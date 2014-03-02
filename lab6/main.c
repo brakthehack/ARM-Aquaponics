@@ -42,18 +42,13 @@ int main(void) {
     f3d_button_init();
     f3d_timer4_init();
 
-    extern uint8_t button_check_state, button_check_state2;
-    extern volatile uint16_t button_state, button_state2;
-    extern volatile uint16_t time_passed, time_passed2;
-    /* Button test code */
+    /* Button test code
        while (1) {
-       delay(20);
-       printf("U, %d E %d %d\n", 
-       f3d_button_state_read(&button_check_state, &button_state, &time_passed),
-       f3d_extra_button(),
-       f3d_button_state_read(&button_check_state2, &button_state2, &time_passed2));
+        delay(20);
+        printf("U, %d E %d\n",
+        f3d_button_read(),
+        f3d_extra_button());
        } 
-    /*
     int count=0;
     int seconds;
     char linebuffer[100];
@@ -77,7 +72,7 @@ int main(void) {
      * Hour,Minute,Second,Month,Day,Year
      * if button is not pressed the value from LSE rtc
      * will be used
-     
+     */
     if(f3d_button_read()){
         RTC_init();
         printf("RTC Code Start\n");
@@ -129,60 +124,11 @@ int main(void) {
         }
 
         //inside the set mode
-        while(mode==1){
-            //f3d_led_all_off();
+        while(mode){
             printf("in set mode\n");
-            //delay();
-
-            if(f3d_button_read()){
-                set_unit^=1;
-                if(set_unit==0){
-                    f3d_led_all_on();
-                    delay();
-                    f3d_led_all_off();
-                    printf("hr\n");
-                }
-                else{
-                    f3d_led_all_on();
-                    delay();
-                    f3d_led_all_off();
-                    delay();
-                    f3d_led_all_on();
-                    delay();
-                    f3d_led_all_off();
-                    printf("min\n");
-                }
-
-            }
-
-            //will go into set hour mide first
-            if(set_unit==0){
-                if(f3d_extra_button()){
-                    set_hr++;
-                    f3d_led_hr_display(set_hr);
-                }
-            }
-
-            if(set_unit==1){
-                if(f3d_extra_button()){
-                    set_min++;
-                    f3d_led_min_display(set_min);
-                }
-            }
-
-            //to exit the set mode
-            if(hold_count>=200){
-                mode=0;
-                f3d_led_all_off();
-                f3d_led_on(1);
-                f3d_led_on(2);
-                f3d_led_on(3);
-                f3d_led_all_off();
-                break;
-            }
+            set_alarm(&set_unit, &set_hr, &set_min, &hold_count); 
             delay();
         }
-
 
         //check hr and min is same as our setting time, if yes, then buzzer goes off
         if(set_hr==RTC_TimeStructure.RTC_Hours&&set_min==RTC_TimeStructure.RTC_Minutes){
@@ -198,7 +144,5 @@ int main(void) {
             set_min=0;
             f3d_frequency(buzzer);
         } 
-    }*/
+    }
 }
-
-

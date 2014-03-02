@@ -52,12 +52,12 @@ void f3d_systick_init(void) {
 void SysTick_Handler(void) {
     // changes the state machine for user button presses
     if (button_check_state) {
-        uint8_t cur_state = f3d_button_read();
+        uint8_t cur_state = GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_0);
         button_state = cur_state ? button_state + cur_state : 0;
         time_passed++;
     }
     if (button_check_state2) {
-        uint8_t cur_state2 = f3d_extra_button();
+        uint8_t cur_state2 = GPIO_ReadInputDataBit(GPIOD, GPIO_Pin_13) ^ 1;
         button_state2 = cur_state2 ? button_state2 + cur_state2 : 0;
         time_passed2++;
     }

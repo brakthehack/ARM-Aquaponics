@@ -39,7 +39,7 @@ void f3d_led_hr_display(int hours);
 void hour_right(int n);
 
 // alarm functions
-void set_alarm(void);
+void set_alarm(int *set_unit, int *set_hr, int *set_min, int *hold_count);
 
 // other functions
-void set_alarm(void);
+void read_time(TimeStruct *time);
