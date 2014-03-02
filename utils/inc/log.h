@@ -14,17 +14,45 @@
  */
 
 #include <stm32f30x.h>
+#include <f3d_gyro.h>
+#include <f3d_pressure.h>
+#include <f3d_sdcard.h>
+#include <diskio.h>
+#include <pressure_utils.h>
 
-#define LOGGING 1 // toggle logging to save space on stm
-#define LOG_SIZE 3000
+#include <stdio.h>
+
+#define LOG_SIZE 120
 #define GYRO_DATA 1
 #define PRESSURE_DATA 2
 
-// buffers here
-float pressure, temp, altitude, gyro_buffer[2];
-float altitude_cache[LOG_SIZE / 10];
-float gyro_cache[LOG_SIZE][2]; // REMEMBER TO CHANGE THIS IF SYSTIC CHNGS
-                                    // also need to change in log_data in cfile
-void log_data(int i);
+/* define statments for the log event table */
+#define ERROR 0
+#define BUTTON_PRESS 1
+#define GYRO_MOVE 2
+#define START_SET_TIME 3
+#define END_SET_TIME 4
+#define SOUND_ALARM 5
+#define QUIET_ALARM 6
 
+/* the buffer size that, when full, is able to be written to the 512 byte block
+ * on the SD card
+ */
+extern const char *log[LOG_SIZE][34];
+extern const char *event[9];
+extern float pressure, temp, altitude, gyro_buffer[2];
+
+//float altitude_cache[LOG_SIZE / 10];
+//float gyro_cache[LOG_SIZE][2]; // REMEMBER TO CHANGE THIS IF SYSTIC CHNGS
+// also need to change in log_data in cfile
+void log_data(const char *event, const char *date_time);
 void get_data(int i);
+int dump_log_to_disk(void);
+void get_timestamp(
+        int current_hour,
+        int current_min,
+        int current_seconds,
+        int current_month,
+        int current_day,
+        int current_year,
+        char *buffer);
