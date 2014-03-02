@@ -31,8 +31,9 @@
 /* Code: */
 #include <stm32f30x.h>
 
-#define BUTTON_SENSITIVITY 5
-#define BUTTON_TIMEOUT 15
+#define BUTTON_SENSITIVITY 14
+#define BUTTON_TIMEOUT 20
+#define BUTTON_DELAY 20
 
 extern uint8_t button_check_state, button_check_state2;
 extern volatile uint16_t button_state, button_state2;

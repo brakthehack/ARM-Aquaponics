@@ -27,9 +27,7 @@ void RTC_init(void) {
     RCC_BackupResetCmd(DISABLE);
     RCC_LSEDriveConfig(RCC_LSEDrive_High);
     RCC_LSEConfig(RCC_LSE_ON);
-    printf("Prim: before LSE Init\n");
     while (RCC_GetFlagStatus(RCC_FLAG_LSERDY) == RESET);
-    printf("Prim: after LSE Init\n");
     RCC_RTCCLKConfig(RCC_RTCCLKSource_LSE);
     RCC_RTCCLKCmd(ENABLE);
 

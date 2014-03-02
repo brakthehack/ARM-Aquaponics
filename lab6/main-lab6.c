@@ -53,9 +53,9 @@ int main(void) {
  
   printf("\nType the file content.\n");
   for (;;) {
-    rc = f_read(&Fil, Buff, sizeof Buff, &br);	/* Read a chunk of file */
-    if (rc || !br) break;			/* Error or end of file */
-    for (i = 0; i < br; i++)		        /* Type the data */
+    rc = f_read(&Fil, Buff, sizeof Buff, &br);	//Read a chunk of file 
+    if (rc || !br) break;			// Error or end of file
+    for (i = 0; i < br; i++)		        // Type the data
       putchar(Buff[i]);
   }
   if (rc) die(rc);
@@ -63,7 +63,7 @@ int main(void) {
   printf("\nClose the file.\n");
   rc = f_close(&Fil);
   if (rc) die(rc);
-  
+
   printf("\nCreate a new file (hello.txt).\n");
   rc = f_open(&Fil, "HELLO.TXT", FA_WRITE | FA_CREATE_ALWAYS);
   if (rc) die(rc);
@@ -83,8 +83,8 @@ int main(void) {
   
   printf("\nDirectory listing...\n");
   for (;;) {
-    rc = f_readdir(&dir, &fno);		/* Read a directory item */
-    if (rc || !fno.fname[0]) break;	/* Error or end of dir */
+    rc = f_readdir(&dir, &fno);		// Read a directory item 
+    if (rc || !fno.fname[0]) break;	// Error or end of dir 
     if (fno.fattrib & AM_DIR)
       printf("   <dir>  %s\n", fno.fname);
     else
@@ -95,6 +95,8 @@ int main(void) {
 
   rc = disk_ioctl(0,GET_SECTOR_COUNT,&retval);
   printf("%d %d\n",rc,retval);
+
+
   while (1);
 }
 

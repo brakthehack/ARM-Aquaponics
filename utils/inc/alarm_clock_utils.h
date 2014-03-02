@@ -17,6 +17,9 @@
 #include <f3d_led.h>
 #include <f3d_rtc.h>
 
+#include <log.h>
+#include <stdio.h>
+
 /* A time struct that holds the current time
  * Created for easy and modular time updates via the
  * read_time function
@@ -39,7 +42,7 @@ void f3d_led_hr_display(int hours);
 void hour_right(int n);
 
 // alarm functions
-void set_alarm(int *set_unit, int *set_hr, int *set_min, int *hold_count);
+void set_alarm(int *set_unit, int *set_hr, int *set_min);
 
 // other functions
 void read_time(TimeStruct *time);

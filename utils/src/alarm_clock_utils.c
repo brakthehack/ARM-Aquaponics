@@ -17,7 +17,11 @@
 */
 
 #include <alarm_clock_utils.h>
-#include <f3d_led.h>
+
+extern int current_hr, current_min, seconds,
+           current_day, current_month, current_year;
+
+extern char char_buffer[34];
 
 void f3d_led_min_display(int mins){
     f3d_led_all_off();
@@ -108,52 +112,66 @@ void hour_right(int n){
 /* Enters the set alarm mode (as requested by the user)
  * Note: the default implementation is f3d_button_read
  */
-void set_alarm(int *set_unit, int *set_hr, int *set_min, int *hold_count) {
+void set_alarm(int *set_unit, int *set_hr, int *set_min) {
+
     if(f3d_button_read()){
-        set_unit^=1;
-        if(set_unit==0){
+            get_timestamp(current_hr,
+                          current_min,
+                          seconds,
+                          current_day,
+                          current_month,
+                          current_year, char_buffer);
+        log_data(event[BUTTON_PRESS], char_buffer);
+        *set_unit^=1;
+        if(*set_unit==0){
             f3d_led_all_on();
-            delay();
+            delay(500);
             f3d_led_all_off();
             printf("hr\n");
         }
         else{
             f3d_led_all_on();
-            delay();
+            delay(500);
             f3d_led_all_off();
-            delay();
+            delay(500);
             f3d_led_all_on();
-            delay();
+            delay(500);
             f3d_led_all_off();
             printf("min\n");
         }
 
     }
     // hour mode
-    if(set_unit==0){
+    if(*set_unit==0){
         if(f3d_extra_button()){
-            set_hr++;
-            f3d_led_hr_display(set_hr);
+            get_timestamp(current_hr,
+                          current_min,
+                          seconds,
+                          current_day,
+                          current_month,
+                          current_year,
+                          char_buffer);
+            log_data(event[BUTTON_PRESS], char_buffer);
+
+            *set_hr = (*set_hr + 1) % 24;
+            printf("hour set to %d\n", *set_hr);
+            f3d_led_hr_display(*set_hr);
         }
     }
-    if(set_unit==1){
+    if(*set_unit==1){
         if(f3d_extra_button()){
-            set_min++;
-            f3d_led_min_display(set_min);
+                get_timestamp(current_hr,
+                          current_min,
+                          seconds,
+                          current_day,
+                          current_month,
+                          current_year, char_buffer);
+            log_data(event[BUTTON_PRESS], char_buffer);
+            *set_min = (*set_min + 1) % 60;
+            printf("min set to %d\n", *set_min);
+            f3d_led_min_display(*set_min);
         }
     }
-    // exit the set mode
-    if(hold_count>=200){
-        mode=0;
-        f3d_led_all_off();
-        f3d_led_on(1);
-        f3d_led_on(2);
-        f3d_led_on(3);
-        f3d_led_all_off();
-        break;
-    }
-
-
 }
 
 void read_time(TimeStruct *time) {

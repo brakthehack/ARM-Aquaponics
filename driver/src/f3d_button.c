@@ -50,7 +50,7 @@
 uint8_t button_check_state = 0, button_check_state2 = 0;
 volatile uint16_t button_state = 0, button_state2 = 0;
 volatile uint16_t time_passed = 0, time_passed2 = 0;
-
+uint8_t recently_pressed = 0;
 
 void f3d_button_init() {
   GPIO_InitTypeDef GPIO_InitStructure;
@@ -98,7 +98,8 @@ uint8_t f3d_button_state_read(uint8_t *btn_check_state,
             *tim_passed = 0;
             // return_value = 0, since we have exceeded the timer
         } else { // we have not timed out yet, so check our counter
-            if (*btn_state > BUTTON_SENSITIVITY) {
+            if (*btn_state > BUTTON_SENSITIVITY && !recently_pressed) {
+                recently_pressed = BUTTON_DELAY;
                 return_value = 1;
                 *tim_passed = 0; // reset counters to maintain our button state of on
             } else {}

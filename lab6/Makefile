@@ -20,6 +20,7 @@ OBJS=  $(STARTUP) main.o \
 	   f3d_delay.o \
 	   log.o \
 	   pressure_utils.o \
+	   alarm_clock_utils.o \
 	   newlib_stubs.o \
 	   queue.o \
 	   ff.o \
