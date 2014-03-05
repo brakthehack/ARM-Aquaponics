@@ -17,7 +17,7 @@
 #include <log.h>
 #include <string.h>
 
-const char *log[LOG_SIZE][34];
+const char *log_buffer[LOG_SIZE][36];
 
 const char *event[] = {
     "ERROR",
@@ -64,7 +64,7 @@ void log_data(const char *event, const char *date_time) {
     }
 
     // append the strings and store into the buffer
-    char *buffer = (char *) log[log_index++];
+    char *buffer = (char *) log_buffer[log_index++];
     strcpy(buffer, event);
     strcat(buffer, " ");
     strcat(buffer, date_time);
@@ -72,9 +72,49 @@ void log_data(const char *event, const char *date_time) {
 }
 
 /* Dumps the current log to the SD card
-*/
-int dump_log_to_disk(void) {
+ * check to make sure f_mount is called in main before calling this function!
+ */
+int dump_log_to_disk(FIL *fil) {
+    FRESULT rc;
+    UINT bw;
+    printf("Dumping Log to Disk NOW\n");
+    printf("Open the file\n");
 
+    /*rc = f_open(fil, "LOG.TXT", FA_OPEN_EXISTING | FA_WRITE);
+      if (rc) die(rc);
+      if (rc == FR_NO_FILE) {
+      printf("No log found.  Creating \" log.txt \".\n");
+      rc = f_open(fil, "LOG.TXT", FA_CREATE_ALWAYS | FA_WRITE);
+      }
+      printf("done\n");
+      if (rc) { die(rc); return 2; } // couldn't open the file
+      int i;
+      char *str;
+      printf("creating str\n");
+      for (i = 0; i < log_index; i++) {
+      str = (char *) log_buffer[i];
+      rc = f_write(fil, str, strlen(str) + 1, &bw); // + 1 to write the null terminator
+      if (rc) {
+      die(rc);
+      break;
+      }
+      }
+      rc = f_close(fil);
+      if (rc) { die(rc); return 1;} // couldn't write or close the file
+
+      printf("Log has been successfully dumped\n");
+      return 0; // success
+      */
+
+    printf("\nCreate a new file (hello.txt).\n");
+    rc = f_open(fil, "HELLO.TXT", FA_WRITE | FA_CREATE_ALWAYS);
+    if (rc) die(rc);
+
+    printf("\nWrite a text data. (Hello world!)\n");
+    rc = f_write(fil, "Hello world!\r\n", 14, &bw);
+    if (rc) die(rc);
+    printf("%u bytes written.\n", bw);
+    f_close(fil);
 }
 
 void get_timestamp(
@@ -95,7 +135,7 @@ void get_timestamp(
     sprintf(yr,    "%d",  current_year);
 
     printf("TIMESTAMP: %d:%d:%d %d/%d/%d\n", current_hour, current_min, current_seconds,
-                                             current_month, current_day, current_year);
+            current_month, current_day, current_year);
     // copy & concat the strings
     strcpy(buffer, hours);
     strcat(buffer, ":");

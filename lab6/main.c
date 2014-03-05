@@ -6,8 +6,8 @@
 #include <f3d_button.h>
 #include <f3d_led.h>
 #include <f3d_sdcard.h>
-#include <diskio.h>
 #include <f3d_gyro.h>
+#include <diskio.h>
 
 #include <log.h>
 #include <alarm_clock_utils.h>
@@ -31,9 +31,13 @@ void getline(char *buf) {
 }
 
 
+
+/* Fat File System Info */
 FATFS Fatfs;
 FIL Fil;
 BYTE Buff[128];
+
+
 
 /* Needed as global for alarm utils and logger */
 int current_hr = 0, current_min = 0, seconds;
@@ -58,23 +62,17 @@ int main(void) {
 
     /* LOGGING DATA */
 
-    extern const char *log[LOG_SIZE][34];
+    extern const char *log_buffer[LOG_SIZE][36];
     extern const char *event[10];
     extern float pressure, temp, altitude, gyro_buffer[2];
+    extern uint16_t log_index;
 
-    /* Button test code
-       while (1) {
-       delay(20);
-       printf("U, %d E %d\n",
-       f3d_button_read(),
-       f3d_extra_button());
-       } */
     int count=0;
     char linebuffer[100], field[30];
     char *p = field;
     char delimiter[] = ",";
     int i, field_num;
-    
+
     // date time
     int button_state=0, mode=0;
     int set_hr=0, set_min = 0, set_unit=1, buzzer=0;
@@ -86,10 +84,7 @@ int main(void) {
     /* File System vars */
 
     FRESULT rc;
-    DIR dir;
-    FILINFO fno;
-    UINT bw, br;
-    unsigned int retval;
+    UINT bw;
 
     f_mount(0, &Fatfs); // register volume work area
 
@@ -119,11 +114,11 @@ int main(void) {
 
         rtc_settime(linebuffer);
         get_timestamp(current_hr,
-                          current_min,
-                          seconds,
-                          current_day,
-                          current_month,
-                          current_year, char_buffer);
+                current_min,
+                seconds,
+                current_day,
+                current_month,
+                current_year, char_buffer);
         log_data(event[BUTTON_PRESS], char_buffer);
     }
 
@@ -131,6 +126,21 @@ int main(void) {
     f3d_frequency(buzzer); // set the buzzer to off
 
     while (1) {
+                printf("\nCreate a new file (hello.txt).\n");
+                rc = f_open(&Fil, "HELLO.TXT", FA_WRITE | FA_CREATE_ALWAYS);
+                if (rc) die(rc);
+
+                printf("\nWrite a text data. (Hello world!)\n");
+                rc = f_write(&Fil, "Hello world!\r\n", 14, &bw);
+                if (rc) die(rc);
+                printf("%u bytes written.\n", bw);
+
+        if (delay_count % 1000 == 0) {
+            if (log_index != 0) {
+                //dump_log_to_disk(&Fil);
+            }
+            log_index = 0;
+        }
         if (delay_count % 100 == 0) { // poll the clock less frequently
             RTC_GetTime(RTC_Format_BIN,&RTC_TimeStructure);
             RTC_GetDate(RTC_Format_BIN,&RTC_DateStructure);
@@ -139,22 +149,22 @@ int main(void) {
             // if the board moves more than 10 degrees on any access log it
             if (gyro_buffer[0] > 10 || gyro_buffer[1] > 10 || gyro_buffer[2] > 10) {
                 get_timestamp(
-                    current_hr,
-                    current_min,
-                    seconds,
-                    current_day,
-                    current_month,
-                    current_year,
-                    char_buffer);
+                        current_hr,
+                        current_min,
+                        seconds,
+                        current_day,
+                        current_month,
+                        current_year,
+                        char_buffer);
                 log_data(event[GYRO_MOVE], char_buffer);
             }
             current_hr=RTC_TimeStructure.RTC_Hours;
             current_min=RTC_TimeStructure.RTC_Minutes;
-        if (current_hr == 0x0 && current_min == 0) {
-            current_day=RTC_DateStructure.RTC_Date;
-            current_month=RTC_DateStructure.RTC_Month;
-            current_year=RTC_DateStructure.RTC_Year + 2000;
-        }
+            if (current_hr == 0x0 && current_min == 0) {
+                current_day=RTC_DateStructure.RTC_Date;
+                current_month=RTC_DateStructure.RTC_Month;
+                current_year=RTC_DateStructure.RTC_Year + 2000;
+            }
             if (seconds!=RTC_TimeStructure.RTC_Seconds) {
                 printf("%02d:%02d:%02d ",
                         RTC_TimeStructure.RTC_Hours,
@@ -171,12 +181,12 @@ int main(void) {
         if(f3d_button_read()){
             button_state ^= 1;
             get_timestamp(current_hr,
-                          current_min,
-                          seconds,
-                          current_day,
-                          current_month,
-                          current_year, char_buffer);
- 
+                    current_min,
+                    seconds,
+                    current_day,
+                    current_month,
+                    current_year, char_buffer);
+
             log_data(event[BUTTON_PRESS], char_buffer);
         }
 
@@ -206,11 +216,11 @@ int main(void) {
 
             rtc_settime(linebuffer);
             get_timestamp(current_hr,
-                          current_min,
-                          seconds,
-                          current_day,
-                          current_month,
-                          current_year, char_buffer);
+                    current_min,
+                    seconds,
+                    current_day,
+                    current_month,
+                    current_year, char_buffer);
 
             log_data(event[START_SET_TIME], char_buffer);
         }
@@ -218,11 +228,11 @@ int main(void) {
         //inside the set mode
         if (mode) {
             get_timestamp(current_hr,
-                          current_min,
-                          seconds,
-                          current_day,
-                          current_month,
-                          current_year, char_buffer);
+                    current_min,
+                    seconds,
+                    current_day,
+                    current_month,
+                    current_year, char_buffer);
 
             log_data(event[SOUND_ALARM], char_buffer);
             printf("going into set mode\n");
@@ -232,13 +242,13 @@ int main(void) {
             set_alarm(&set_unit, &set_hr, &set_min); 
             // exit the set mode
             if(hold_count>=100){
-                    get_timestamp(current_hr,
-                          current_min,
-                          seconds,
-                          current_day,
-                          current_month,
-                          current_year, char_buffer);
-                    log_data(event[QUIET_ALARM], char_buffer);
+                get_timestamp(current_hr,
+                        current_min,
+                        seconds,
+                        current_day,
+                        current_month,
+                        current_year, char_buffer);
+                log_data(event[QUIET_ALARM], char_buffer);
 
                 printf("Exiting set mode\n");
                 f3d_led_all_on();
@@ -254,12 +264,12 @@ int main(void) {
                 set_min==RTC_TimeStructure.RTC_Minutes &&
                 0x0==RTC_TimeStructure.RTC_Seconds){
             if (!buzzer) {
-                    get_timestamp(current_hr,
-                          current_min,
-                          seconds,
-                          current_day,
-                          current_month,
-                          current_year, char_buffer);
+                get_timestamp(current_hr,
+                        current_min,
+                        seconds,
+                        current_day,
+                        current_month,
+                        current_year, char_buffer);
                 log_data(event[SOUND_ALARM], char_buffer);
 
                 buzzer = 4000;
@@ -273,19 +283,19 @@ int main(void) {
             //set_min=-1;
             f3d_frequency(buzzer);
             get_timestamp(current_hr,
-                          current_min,
-                          seconds,
-                          current_day,
-                          current_month,
-                          current_year, char_buffer);
+                    current_min,
+                    seconds,
+                    current_day,
+                    current_month,
+                    current_year, char_buffer);
             log_data(event[BUTTON_PRESS], char_buffer);
 
             get_timestamp(current_hr,
-                          current_min,
-                          seconds,
-                          current_day,
-                          current_month,
-                          current_year, char_buffer);
+                    current_min,
+                    seconds,
+                    current_day,
+                    current_month,
+                    current_year, char_buffer);
             log_data(event[QUIET_ALARM], char_buffer);
 
             delay(200); // try to avoid the buzzer getting called twice
