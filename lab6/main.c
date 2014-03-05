@@ -59,7 +59,7 @@ int main(void) {
     /* LOGGING DATA */
 
     extern const char *log[LOG_SIZE][34];
-    extern const char *event[9];
+    extern const char *event[10];
     extern float pressure, temp, altitude, gyro_buffer[2];
 
     /* Button test code

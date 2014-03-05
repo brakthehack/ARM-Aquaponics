@@ -22,6 +22,7 @@ const char *log[LOG_SIZE][34];
 const char *event[] = {
     "ERROR",
     "BUTTON_PRESS",
+    "BUTTON2_PRESS",
     "GYRO_MOVE",
     "START_SET_TIME",
     "END_SET_TIME",

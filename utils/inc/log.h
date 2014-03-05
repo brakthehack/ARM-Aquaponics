@@ -29,17 +29,18 @@
 /* define statments for the log event table */
 #define ERROR 0
 #define BUTTON_PRESS 1
-#define GYRO_MOVE 2
-#define START_SET_TIME 3
-#define END_SET_TIME 4
-#define SOUND_ALARM 5
-#define QUIET_ALARM 6
+#define BUTTONPRESS2 2
+#define GYRO_MOVE 3
+#define START_SET_TIME 4
+#define END_SET_TIME 5
+#define SOUND_ALARM 6
+#define QUIET_ALARM 7
 
 /* the buffer size that, when full, is able to be written to the 512 byte block
  * on the SD card
  */
 extern const char *log[LOG_SIZE][34];
-extern const char *event[9];
+extern const char *event[10];
 extern float pressure, temp, altitude, gyro_buffer[2];
 
 //float altitude_cache[LOG_SIZE / 10];
