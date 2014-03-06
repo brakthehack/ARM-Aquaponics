@@ -8,6 +8,8 @@
 #include <f3d_sdcard.h>
 #include <f3d_gyro.h>
 #include <diskio.h>
+#include <math.h>
+#include <string.h>
 
 #include <log.h>
 #include <alarm_clock_utils.h>
@@ -42,7 +44,7 @@ BYTE Buff[128];
 /* Needed as global for alarm utils and logger */
 int current_hr = 0, current_min = 0, seconds;
 int current_day = 0, current_month = 0, current_year = 0;
-char char_buffer[34];
+char char_buffer[50];
 
 int main(void) {
     RTC_TimeTypeDef RTC_TimeStructure;
@@ -58,11 +60,19 @@ int main(void) {
     f3d_button_init();
     f3d_gyro_init();
     f3d_timer4_init();
+    f3d_delay_init();
     f3d_sdcard_init();
-
+    
+    /*  Provide a delay to allow the SDCARD time to go through it's power
+	up initialization. */
+    int o;
+    for (o=0;o<500;o++) { 
+     f3d_delay_uS(500);
+    } 
+    
     /* LOGGING DATA */
 
-    extern const char *log_buffer[LOG_SIZE][36];
+    extern const char *log_buffer[LOG_SIZE][50];
     extern const char *event[10];
     extern float pressure, temp, altitude, gyro_buffer[2];
     extern uint16_t log_index;
@@ -83,10 +93,18 @@ int main(void) {
 
     /* File System vars */
 
-    FRESULT rc;
-    UINT bw;
+    //FRESULT rc;
+    //UINT bw;
+
+    FRESULT rc;	/* Result code */
+    DIR dir;	/* Directory object */
+    FILINFO fno;	/* File information object */
+    UINT bw, br;
+    unsigned int retval;
 
     f_mount(0, &Fatfs); // register volume work area
+  
+
 
     /* set the time in serialT using CSV
      * Hour,Minute,Second,Month,Day,Year
@@ -125,19 +143,19 @@ int main(void) {
     f3d_led_all_off();
     f3d_frequency(buzzer); // set the buzzer to off
 
+    
+      
+
+    
+
     while (1) {
-                printf("\nCreate a new file (hello.txt).\n");
-                rc = f_open(&Fil, "HELLO.TXT", FA_WRITE | FA_CREATE_ALWAYS);
-                if (rc) die(rc);
+      
+     
+      
 
-                printf("\nWrite a text data. (Hello world!)\n");
-                rc = f_write(&Fil, "Hello world!\r\n", 14, &bw);
-                if (rc) die(rc);
-                printf("%u bytes written.\n", bw);
-
-        if (delay_count % 1000 == 0) {
+      if (delay_count % 1000 == 0) {
             if (log_index != 0) {
-                //dump_log_to_disk(&Fil);
+	      bw=dump_log_to_disk(&Fil, bw);
             }
             log_index = 0;
         }
@@ -157,6 +175,10 @@ int main(void) {
                         current_year,
                         char_buffer);
                 log_data(event[GYRO_MOVE], char_buffer);
+		char buffer[50];
+		sprintf(buffer, "x: %f, y: %f, z: %f\n", gyro_buffer[0],
+			gyro_buffer[1], gyro_buffer[2]);
+		log_gyro(buffer);
             }
             current_hr=RTC_TimeStructure.RTC_Hours;
             current_min=RTC_TimeStructure.RTC_Minutes;
@@ -215,6 +237,8 @@ int main(void) {
             printf("#\n");
 
             rtc_settime(linebuffer);
+
+
             get_timestamp(current_hr,
                     current_min,
                     seconds,
@@ -239,7 +263,12 @@ int main(void) {
             hold_count = 0;
         }
         while(mode){
-            set_alarm(&set_unit, &set_hr, &set_min); 
+	  ///////////
+	  RTC_GetTime(RTC_Format_BIN,&RTC_TimeStructure);
+	   current_hr=RTC_TimeStructure.RTC_Hours;
+	   current_min=RTC_TimeStructure.RTC_Minutes;
+	   seconds=RTC_TimeStructure.RTC_Seconds;
+	  set_alarm(&set_unit, &set_hr, &set_min); 
             // exit the set mode
             if(hold_count>=100){
                 get_timestamp(current_hr,
