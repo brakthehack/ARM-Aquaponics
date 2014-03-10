@@ -33,7 +33,6 @@ void getline(char *buf) {
 }
 
 
-
 /* Fat File System Info */
 FATFS Fatfs;
 FIL Fil;
@@ -62,14 +61,14 @@ int main(void) {
     f3d_timer4_init();
     f3d_delay_init();
     f3d_sdcard_init();
-    
+
     /*  Provide a delay to allow the SDCARD time to go through it's power
-	up initialization. */
+        up initialization. */
     int o;
     for (o=0;o<500;o++) { 
-     f3d_delay_uS(500);
+        f3d_delay_uS(500);
     } 
-    
+
     /* LOGGING DATA */
 
     extern const char *log_buffer[LOG_SIZE][50];
@@ -103,7 +102,7 @@ int main(void) {
     unsigned int retval;
 
     f_mount(0, &Fatfs); // register volume work area
-  
+
 
 
     /* set the time in serialT using CSV
@@ -143,19 +142,10 @@ int main(void) {
     f3d_led_all_off();
     f3d_frequency(buzzer); // set the buzzer to off
 
-    
-      
-
-    
-
     while (1) {
-      
-     
-      
-
-      if (delay_count % 1000 == 0) {
+        if (delay_count % 1000 == 0) {
             if (log_index != 0) {
-	      bw=dump_log_to_disk(&Fil, bw);
+                bw=dump_log_to_disk(&Fil, bw);
             }
             log_index = 0;
         }
@@ -175,10 +165,10 @@ int main(void) {
                         current_year,
                         char_buffer);
                 log_data(event[GYRO_MOVE], char_buffer);
-		char buffer[50];
-		sprintf(buffer, "x: %f, y: %f, z: %f\n", gyro_buffer[0],
-			gyro_buffer[1], gyro_buffer[2]);
-		log_gyro(buffer);
+                char buffer[50];
+                sprintf(buffer, "x: %f, y: %f, z: %f\n", gyro_buffer[0],
+                        gyro_buffer[1], gyro_buffer[2]);
+                log_gyro(buffer);
             }
             current_hr=RTC_TimeStructure.RTC_Hours;
             current_min=RTC_TimeStructure.RTC_Minutes;
@@ -263,12 +253,12 @@ int main(void) {
             hold_count = 0;
         }
         while(mode){
-	  ///////////
-	  RTC_GetTime(RTC_Format_BIN,&RTC_TimeStructure);
-	   current_hr=RTC_TimeStructure.RTC_Hours;
-	   current_min=RTC_TimeStructure.RTC_Minutes;
-	   seconds=RTC_TimeStructure.RTC_Seconds;
-	  set_alarm(&set_unit, &set_hr, &set_min); 
+            ///////////
+            RTC_GetTime(RTC_Format_BIN,&RTC_TimeStructure);
+            current_hr=RTC_TimeStructure.RTC_Hours;
+            current_min=RTC_TimeStructure.RTC_Minutes;
+            seconds=RTC_TimeStructure.RTC_Seconds;
+            set_alarm(&set_unit, &set_hr, &set_min); 
             // exit the set mode
             if(hold_count>=100){
                 get_timestamp(current_hr,

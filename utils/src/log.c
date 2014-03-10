@@ -85,7 +85,7 @@ int dump_log_to_disk(FIL *fil,UINT bw) {
       rc = f_open(fil, "LOG.TXT", FA_CREATE_ALWAYS | FA_WRITE);
     }
     printf("done\n");
-    if (rc) { return bw; } // couldn't open the file
+    if (rc) { die(rc); return bw; } // couldn't open the file
     int i;
     char *str;
     printf("creating str\n");
