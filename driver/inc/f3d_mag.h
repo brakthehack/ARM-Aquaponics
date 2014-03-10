@@ -38,5 +38,6 @@
 
 void f3d_mag_init();
 void f3d_mag_read(float *);
+float f3d_calculate_direction(float *pitch_roll_yaw, float *mag_data);
 
 /* f3d_mag.h ends here */

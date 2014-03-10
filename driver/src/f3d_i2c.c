@@ -42,7 +42,20 @@ void f3d_i2c1_init() {
     I2C_InitTypeDef  I2C_InitStructure;
 
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C1,ENABLE);  // Enable the clock to the I2C peripheral 
-    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB, ENABLE);  // Port B - SDA (7) and SCL (6)
+    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB, ENABLE);  // Port B - SDA (7) and SCL (6)    
+
+    GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_4);
+    GPIO_PinAFConfig(GPIOB, GPIO_PinSource7, GPIO_AF_4);
+
+    // init for clk, data
+    GPIO_StructInit(&GPIO_InitStructure);
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOB, &GPIO_InitStructure);
+
 
     // I2C GPIO Initialization and Alternate Function Selection 
 

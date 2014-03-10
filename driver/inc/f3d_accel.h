@@ -38,7 +38,7 @@
 
 void f3d_accel_init();
 void f3d_accel_read(float *);
-
+void f3d_calibrate_data(float *);
 
 
 /* f3d_accel.h ends here */

@@ -26,7 +26,8 @@ OBJS=  $(STARTUP) main.o \
 	   stm32f30x_tim.o \
 	   stm32f30x_misc.o \
 	   stm32f30x_pwr.o \
-	   stm32f30x_rtc.o
+	   stm32f30x_rtc.o \
+	   stm32f30x_i2c.o
 
 # include common make file
 include $(TEMPLATEROOT)/Makefile.common

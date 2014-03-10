@@ -37,6 +37,9 @@
 
 #include <f3d_i2c.h>
 #include <f3d_mag.h>
+#include <math.h>
+
+#define PI 3.1415927
 
 void f3d_mag_init() {
     // MAG I2C Address = 0x3C 
@@ -51,6 +54,19 @@ void f3d_mag_init() {
 
     value = 0x00;                      // Continuous Conversion
     f3d_i2c1_write(0x3C, 0x02, &value); // Mag (0x3C), MR  (0x23)
+}
+
+float f3d_calculate_direction(float *pitch_roll_yaw, float *mag_data) {
+    
+    float Pitch = pitch_roll_yaw[0], Roll = pitch_roll_yaw[1];
+    float XH,YH,heading;
+
+    XH=mag_data[0]*cos(Pitch)+mag_data[2]*sin(Pitch);
+    YH=mag_data[0]*sin(Roll)*sin(Pitch)+mag_data[1]*cos(Roll)-mag_data[2]*sin(Roll)*cos(Pitch);
+
+    heading=atan2(YH,XH)*180/PI;
+    heading += 180;
+    return heading;
 }
 
 void f3d_mag_read(float *mag_data) {

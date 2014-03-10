@@ -36,6 +36,10 @@
 
 #include <f3d_i2c.h>
 #include <f3d_accel.h>
+#include <math.h>
+
+#define GRAVITY 9.81
+#define PI 3.14159265359
 
 void f3d_accel_init() {
     // Accelerometer I2C Address = 0x32 
@@ -53,6 +57,21 @@ void f3d_accel_init() {
     f3d_i2c1_write(0x32, 0x21, &value); // Accel (0x32, Ctrl Reg2  (0x21)
 }
 
+void f3d_calibrate_data(float *accel_data) {
+    float x = accel_data[0], y = accel_data[1], z = accel_data[2];
+    float pitch = 0, roll = 0, yaw = 0;
+
+    //pitch = atan2(x, y * y + z * z) * 180 / PI;
+    //roll = atan2(y, x * x + z * z) * 180 / PI;
+    pitch = asin(-x);
+    roll = asin(y / cos(pitch));
+    yaw = acos(z / GRAVITY) * 180 / PI;
+
+    accel_data[0] = pitch;
+    accel_data[1] = roll;
+    accel_data[2] = yaw;
+}
+
 void f3d_accel_read(float *accel_data) {
     int16_t raw_data[3];
     uint8_t buffer[6];
@@ -63,6 +82,8 @@ void f3d_accel_read(float *accel_data) {
         raw_data[i]=((int16_t)((uint16_t)buffer[2*i+1] << 8) + buffer[2*i])/(uint8_t)16;
         accel_data[i]=(float)raw_data[i]/1000.0;
     }
+
+    f3d_calibrate_data(accel_data);
 }
 
 /* f3d_accel.c ends here */
