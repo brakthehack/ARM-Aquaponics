@@ -53,10 +53,9 @@ int main(void) {
         button_state ^= f3d_button_read();
 
         //printf("Accel: %f, %f, %f\n", accel_data[0], accel_data[1], accel_data[2]);
-        //printf("Compass Direction: %f\n", f3d_calculate_direction(accel_data, mag_data));
         float compass = f3d_calculate_direction(accel_data, mag_data);
         int i;
-
+        printf("Compass Direction: %f\n", compass);
         if (button_state) {
             for (i = 0; i < 8; i++) {
                 if (compass < (i + 1) * 45) {
