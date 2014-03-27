@@ -479,4 +479,6 @@ bool nrf24l01_csn_pin_active();
 unsigned char nrf24l01_execute_command(unsigned char instruction, unsigned char * data, unsigned int len, bool copydata);
 void nrf24l01_spi_send_read(unsigned char * data, unsigned int len, bool copydata);
 
+extern volatile int device;
+
 #endif /*NRF24L01_H_*/

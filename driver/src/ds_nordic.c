@@ -11,11 +11,11 @@ MISO 	PB4
 MOSI 	PB5
 SCK 	PB3
 CSN 	PC1
-CE 	PC2
+CE 	    PC2
 VCC 	3V 
 
 2nd
-CSN PB2
+CSN     PB2
 */
 
   // Setup SPI2 to talk to the SD card
@@ -24,7 +24,8 @@ CSN PB2
 
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI3 , ENABLE);
   RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB, ENABLE);
-
+  /* RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE); // Prepare to use DMA to accelerate the transactions */
+  
   // Initialization for SCK, MISO, MOSI
   GPIO_PinAFConfig(GPIOB, GPIO_PinSource3, GPIO_AF_6);
   GPIO_PinAFConfig(GPIOB, GPIO_PinSource4, GPIO_AF_6);
@@ -37,6 +38,37 @@ CSN PB2
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+  //IRQ
+  GPIO_StructInit(&GPIO_InitStructure);
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_Init(GPIOC, &GPIO_InitStructure);
+
+  //1st CSN CE
+  GPIO_StructInit(&GPIO_InitStructure);
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1 | GPIO_Pin_2;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_Init(GPIOC, &GPIO_InitStructure);
+
+  //2nd CSN
+  GPIO_StructInit(&GPIO_InitStructure);
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_Init(GPIOB, &GPIO_InitStructure);
+ 
+
+  nordic1_CS_HIGH();
+  nordic2_CS_HIGH();
 
   /* SPI configuration -------------------------------------------------------*/
   SPI_I2S_DeInit(SPI3);
@@ -56,74 +88,13 @@ CSN PB2
   SPI_RxFIFOThresholdConfig(SPI2, SPI_RxFIFOThreshold_QF);
   /* Enable SPI1 */
   SPI_Cmd(SPI3, ENABLE);
-
-  /* RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE); // Prepare to use DMA to accelerate the transactions */
-
-  //IQR
-  GPIO_StructInit(&GPIO_InitStructure);
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_Init(GPIOC, &GPIO_InitStructure);
-
-  //1st CSN CE
-   GPIO_StructInit(&GPIO_InitStructure);
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1 | GPIO_Pin_2;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_Init(GPIOC, &GPIO_InitStructure);
-
-  //2nd CSN
-  GPIO_StructInit(&GPIO_InitStructure);
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_Init(GPIOB, &GPIO_InitStructure);
-
-  nordic1_CS_HIGH();
-  nordic2_CS_HIGH();
-
-  nrf24l01_initialize_debug(false, 32, true);
   
+  nrf24l01_initialize_debug(false, 32, true); 
 
 } 
-
-
-int spiReadWrite(SPI_TypeDef *SPIx,uint8_t *rbuf, const uint8_t *tbuf, int cnt, uint16_t speed) {
-  int i;
-  int timeout;
-
-  SPIx->CR1 = (SPIx->CR1&~SPI_BaudRatePrescaler_256)|speed;
-  for (i = 0; i < cnt; i++){
-    if (tbuf) {
-      SPI_SendData8(SPIx,*tbuf++);
-    }
-    else {
-      SPI_SendData8(SPIx,0xff);
-    }
-    timeout = 100;
-    while (SPI_I2S_GetFlagStatus(SPIx,SPI_I2S_FLAG_RXNE) == RESET);
-    if (rbuf) {
-      *rbuf++ = SPI_ReceiveData8(SPIx);
-    }
-    else {
-      SPI_ReceiveData8(SPIx);
-    }
-  }
-  return i;
-}
-
-
 
 uint8_t ds_nordic_send_spi_byte(uint8_t data) {
   SPI_SendData8(SPI3,data);
   while(SPI_I2S_GetFlagStatus(SPI3,SPI_I2S_FLAG_RXNE) == RESET);
   return SPI_ReceiveData8(SPI3);      
 }
-
