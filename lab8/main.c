@@ -47,31 +47,44 @@ int main(void) {
     ds_nordic_init();
     f3d_delay_uS(1000);
 
-    unsigned char txdata[32]={};
+    unsigned char txdata[32]={"hello"};
     unsigned char rxdata[32]={};
     unsigned char data;
     
     while(1){
+      printf("a\n");
         nrf24l01_clear_flush();
-        
+        printf("b\n");
         nrf24l01_write_tx_payload(txdata, 32, true);
-        while(!(nrf24l01_irq_pin_active() && (nrf24l01_irq_tx_ds_active() || nrf24l01_irq_max_rt_active()))); 
+	printf("c\n");
 
-        if (!nrf24l01_irq_max_rt_active()) {
-            nrf24l01_irq_clear_all();
-            nrf24l01_set_as_rx(true);
-        }
-        else {
-            nrf24l01_flush_tx(); //get the unsent character out of the TX FIFO
-            nrf24l01_irq_clear_all(); //clear all interrupts
-            printf("Node: Failed to send %c\n",data);
-        }
+	//device=1;
+	 while(!(nrf24l01_irq_pin_active() && (nrf24l01_irq_tx_ds_active() || nrf24l01_irq_max_rt_active())));
+	 //unsigned char ch;
+	 //while(ch!=0x1e){
+	 //ch=nrf24l01_get_status();
+	 //printf("%c\n",ch);
+	 //	}
+	 printf("d\n");
+
+	 printf("e\n");
+	 if (!nrf24l01_irq_max_rt_active()) {
+	   nrf24l01_irq_clear_all();
+	   nrf24l01_set_as_rx(true);
+	 }
+	 else {
+	   nrf24l01_flush_tx(); //get the unsent character out of the TX FIFO
+	   nrf24l01_irq_clear_all(); //clear all interrupts
+	   printf("Node: Failed to send %c\n",data);
+	 }
     }
 
+
+    printf("f\n");
     while(!(nrf24l01_irq_pin_active() && nrf24l01_irq_rx_dr_active()));
     nrf24l01_read_rx_payload(rxdata, 32);
     nrf24l01_irq_clear_all();
-
+    printf("g\n");
     f3d_delay_uS(130);
     nrf24l01_set_as_tx();
 

@@ -44,7 +44,7 @@ CSN     PB2
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;//
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOC, &GPIO_InitStructure);
 
@@ -85,15 +85,19 @@ CSN     PB2
   SPI_Init(SPI3, &SPI_InitStructure);
 
   /* Configure the RX FIFO Threshold */
-  SPI_RxFIFOThresholdConfig(SPI2, SPI_RxFIFOThreshold_QF);
+  SPI_RxFIFOThresholdConfig(SPI3, SPI_RxFIFOThreshold_QF);
   /* Enable SPI1 */
   SPI_Cmd(SPI3, ENABLE);
   
   nrf24l01_initialize_debug(false, 32, true); 
+  device^=1;
+  nrf24l01_initialize_debug(true, 32, true);
+  device^=1;
 
 } 
 
 uint8_t ds_nordic_send_spi_byte(uint8_t data) {
+  //while(SPI_I2S_GetFlagStatus(SPI3,SPI_I2S_FLAG_TXE) == RESET);
   SPI_SendData8(SPI3,data);
   while(SPI_I2S_GetFlagStatus(SPI3,SPI_I2S_FLAG_RXNE) == RESET);
   return SPI_ReceiveData8(SPI3);      

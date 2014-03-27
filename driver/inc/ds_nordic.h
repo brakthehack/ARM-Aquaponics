@@ -11,3 +11,5 @@
 void ds_nordic_init(void);
 int spiReadWrite(SPI_TypeDef *SPIx,uint8_t *rbuf, const uint8_t *tbuf, int cnt, uint16_t speed);
 uint8_t ds_nordic_send_spi_byte(uint8_t data);
+
+extern volatile int device;

@@ -60,7 +60,7 @@
 // delay include file is.
 //////////////////////////////////////////////////////////////////////////////////
 #include <f3d_delay.h>
-#define delay_us(microseconds) ds_delay_uS(microseconds)
+#define delay_us(microseconds) f3d_delay_uS(microseconds)
 
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -78,18 +78,18 @@
 // say that the IO port is 8-bits wide, and you have attached the pin to pin 0 of
 // the port. Then your define would look like this:
 //
-// #define nrf24l01_CE_IOREGISTER IOPORT1
-// #define nrf24l01_CE_PINMASK 0x01
+//#define nrf24l01_CE_IOREGISTER IOPORT1
+//#define nrf24l01_CE_PINMASK 0x01
 //
 // If you have defines in your include file for individual IO pins, you could use
 // this define in this file, as well. Using the previous example, assume that in
 // your microcontroller's include file, pin 0 of IOPORT1 has a define like this
 //
-// #define IOPORT1_PIN0 0x01
+//#define IOPORT1_PIN0 0x01
 //
 // Then, you could make your defines for the CE pin in this file look like this:
 //
-// #define nrf24l01_CE_IOREGISTER IOPORT1
+//#define nrf24l01_CE_IOREGISTER IOPORT1
 // #define nrf24l01_CE_PINMASK IOPORT1_PIN0
 //
 // You should also change the include file name below to whatever the name of your
@@ -101,21 +101,21 @@
 //This is used so that the routines can send TX payload data and
 // properly initialize the nrf24l01 in TX and RX states.
 //Change these definitions (and then recompile) to suit your particular application.
-//#define nrf24l01_CE_IOREGISTER GPIOC_BASE
-//#define nrf24l01_CE_PINMASK GPIO_Pin_2
+#define nrf24l01_CE_IOREGISTER GPIOC_BASE
+#define nrf24l01_CE_PINMASK GPIO_Pin_2
 
 //defines for uC pins CSN pin is connected to
 //This is used so that the routines can send properly operate the SPI interface
 // on the nrf24l01.
 //Change these definitions (and then recompile) to suit your particular application.
-//#define nrf24l01_CSN_IOREGISTER GPIOC_BASE
-//#define nrf24l01_CSN_PINMASK GPIO_Pin_1
+#define nrf24l01_CSN_IOREGISTER GPIOC_BASE
+#define nrf24l01_CSN_PINMASK GPIO_Pin_1
 
 //defines for uC pins IRQ pin is connected to
 //This is used so that the routines can poll for IRQ or create an ISR.
 //Change these definitions (and then recompile) to suit your particular application.
-//#define nrf24l01_IRQ_IOREGISTER GPIOC_BASE
-//#define nrf24l01_IRQ_PINMASK GPIO_Pin_3
+#define nrf24l01_IRQ_IOREGISTER GPIOC_BASE
+#define nrf24l01_IRQ_PINMASK GPIO_Pin_3
 
 
 ////////////////////////////////////////////////////////////////////////////////////

@@ -508,15 +508,15 @@ void nrf24l01_transmit()
 //clears the pin on the host microcontroller that is attached to the 24l01's CE pin
 void nrf24l01_clear_ce()
 {
-    // nrf24l01_CE_IOREGISTER &= ~nrf24l01_CE_PINMASK;
-    // RF_CE_LOW();
-    GPIO_ResetBits(GPIOC,GPIO_Pin_2);
+  //nrf24l01_CE_IOREGISTER &= ~nrf24l01_CE_PINMASK;
+  //RF_CE_LOW();
+  GPIO_ResetBits(GPIOC,GPIO_Pin_2);
 }
 
 //sets the pin on the host microcontroller that is attached to the 24l01's CE pin
 void nrf24l01_set_ce()
 {
-    // nrf24l01_CE_IOREGISTER |= nrf24l01_CE_PINMASK;
+  //nrf24l01_CE_IOREGISTER |= nrf24l01_CE_PINMASK;
     GPIO_SetBits(GPIOC,GPIO_Pin_2);
 }
 
@@ -528,10 +528,12 @@ bool nrf24l01_ce_pin_active() {
     else {
         return false;
     }
-    /* if((nrf24l01_CE_IOREGISTER & nrf24l01_CE_PINMASK) != 0) */
-    /* return true; */
-    /* else */
-    /* return false; */
+    /*
+    if((nrf24l01_CE_IOREGISTER & nrf24l01_CE_PINMASK) != 0) 
+    return true; 
+     else 
+     return false; 
+    */
 }
 
 //sets the pin on the host microcontroller that is attached to the 24l01's CSN pin
@@ -915,19 +917,20 @@ bool nrf24l01_fifo_rx_empty()
 //returns true if IRQ pin is low, false otherwise
 bool nrf24l01_irq_pin_active() {
     bool retval = false;
-
+    /*
     if (GPIO_ReadInputDataBit(GPIOC,GPIO_Pin_3)) {
-        // printf("irq=f\n");
+      //printf("irq=f\n");
         return (false);
     }
     else {
-        // printf("irq=t\n");
+      //printf("irq=t\n");
         return (true);
     }
-    /* if((nrf24l01_IRQ_IOREGISTER & nrf24l01_IRQ_PINMASK) != 0) */
-    /* return false; */
-    /* else */
-    /* return true; */
+    */
+    if((nrf24l01_IRQ_IOREGISTER & nrf24l01_IRQ_PINMASK) != 0) 
+      return false; 
+    else 
+      return true; 
 }
 
 //returns true if RX_DR interrupt is active, false otherwise
