@@ -17,10 +17,14 @@ OBJS=  $(STARTUP) main.o \
 	   f3d_i2c.o \
 	   f3d_mag.o \
 	   f3d_accel.o \
+	   f3d_rtc.o \
 	   newlib_stubs.o \
+	   schedule.o \
 	   queue.o \
 	   ds_nordic.o \
+	   ds_wifibase.o \
 	   nrf24l01.o \
+	   nrf24l01base.o \
 	   stm32f30x_rcc.o \
 	   stm32f30x_gpio.o \
 	   stm32f30x_usart.o \
