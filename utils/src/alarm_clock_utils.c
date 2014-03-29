@@ -151,7 +151,7 @@ void set_alarm(int *set_unit, int *set_hr, int *set_min) {
                           current_month,
                           current_year,
                           char_buffer);
-            log_data(event[BUTTON_PRESS], char_buffer);
+            log_data(event[BUTTON2_PRESS], char_buffer);
 
             *set_hr = (*set_hr + 1) % 24;
             printf("hour set to %d\n", *set_hr);
@@ -166,7 +166,7 @@ void set_alarm(int *set_unit, int *set_hr, int *set_min) {
                           current_day,
                           current_month,
                           current_year, char_buffer);
-            log_data(event[BUTTON_PRESS], char_buffer);
+            log_data(event[BUTTON2_PRESS], char_buffer);
             *set_min = (*set_min + 1) % 60;
             printf("min set to %d\n", *set_min);
             f3d_led_min_display(*set_min);
