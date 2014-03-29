@@ -48,26 +48,26 @@
 #include <queue.h>
 
 void init_queue(queue_t *buf) {
-  buf->head = buf->tail = 0;
+    buf->head = buf->tail = 0;
 }
 // returns 1 if success, 0 if fail
 int enqueue (queue_t *buf, int data) {
-  if ((buf->tail + 1) % QUEUE_SIZE == buf->head)
-    return 0;
-  buf->tail = ++buf->tail % QUEUE_SIZE;
-  buf->buffer[buf->tail] = data;
-  return 1;
+    if ((buf->tail + 1) % QUEUE_SIZE == buf->head)
+        return 0;
+    buf->tail = ++buf->tail % QUEUE_SIZE;
+    buf->buffer[buf->tail] = data;
+    return 1;
 }
 
 // if the buffer is empty 0 should be returned, else 1
 int dequeue (queue_t *buf) {
-  if (buf->tail == buf->head)
-    return 0;
-  buf->head = ++buf->head % QUEUE_SIZE;
-  return buf->buffer[buf->head];
+    if (buf->tail == buf->head)
+        return 0;
+    buf->head = ++buf->head % QUEUE_SIZE;
+    return buf->buffer[buf->head];
 }
 
 // return 1 if empty, 0 if not
 int queue_empty(queue_t *buf) {
-  return buf->head == buf->tail ? 1 : 0;
+    return buf->head == buf->tail ? 1 : 0;
 }
