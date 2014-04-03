@@ -1,0 +1,3 @@
+2014-04-02T19:46:27 INFO src/stlink-usb.c: -- exit_dfu_mode
+2014-04-02T19:46:30 INFO src/stlink-common.c: Loading device parameters....
+2014-04-02T19:46:30 WARN src/stlink-common.c: unknown chip id! 0

@@ -16,8 +16,6 @@ OBJS=  $(STARTUP) main.o \
 	   f3d_i2c.o \
 	   newlib_stubs.o \
 	   queue.o \
-	   ds_wifibase.o \
-	   nrf24l01base.o \
 	   stm32f30x_rcc.o \
 	   stm32f30x_gpio.o \
 	   stm32f30x_usart.o \
@@ -26,7 +24,14 @@ OBJS=  $(STARTUP) main.o \
 	   stm32f30x_misc.o \
 	   stm32f30x_pwr.o \
 	   stm32f30x_rtc.o \
-	   stm32f30x_i2c.o
+	   stm32f30x_i2c.o \
+	   f3d_lcd_sd.o \
+	   f3d_dac.o \
+	   glcdfont.o \
+	   mmcbb.o \
+	   stm32f30x_dac.o \
+	   stm32f30x_dma.o \
+
 
 # include common make file
 include $(TEMPLATEROOT)/Makefile.common
