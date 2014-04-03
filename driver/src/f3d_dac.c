@@ -1,6 +1,17 @@
 #include <f3d_dac.h>
 
+
+const uint16_t Sine12bit[32] = {
+    2047, 2447, 2831, 3185, 3498, 3750, 3939, 4056, 4095, 4056,
+    3939, 3750, 3495, 3185, 2831, 2447, 2047, 1647, 1263, 909, 
+    599, 344, 155, 38, 0, 38, 155, 344, 599, 909, 1263, 1647};    
+const uint8_t Escalator8bit[6] = {0x0, 0x33, 0x66, 0x99, 0xCC, 0xFF};
+
+
+
 void f3d_dac_channel_setup(void) {
+  DAC_InitTypeDef DAC_InitStructure;
+  DMA_InitTypeDef DMA_InitStructure;
     // enable the DAC
     DAC_DeInit(); 
     DAC_InitStructure.DAC_Trigger = DAC_Trigger_T2_TRGO;
@@ -51,5 +62,5 @@ void f3d_dac_init(void) {
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
     GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
     GPIO_Init(GPIOA, &GPIO_InitStructure);
-    ds_dac_channel_setup();
+    f3d_dac_channel_setup();
 }

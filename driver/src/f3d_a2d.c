@@ -6,7 +6,12 @@
  * to read values.  The values will be converted into a 12-bit number.
  */
 void f3d_a2d_init(void) {
-    
+  GPIO_InitTypeDef GPIO_InitStructure;
+  ADC_CommonInitTypeDef ADC_CommonInitStructure;
+  ADC_InitTypeDef ADC_InitStructure;
+
+
+
     // initialize the clocks
     RCC_ADCCLKConfig(RCC_ADC12PLLCLK_Div2);
     RCC_AHBPeriphClockCmd(RCC_AHBPeriph_ADC12, ENABLE);
@@ -57,7 +62,7 @@ void f3d_a2d_init(void) {
 
 }
 
-void f3d_read_adc(void) {
+int f3d_read_adc(void) {
   while(ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == RESET);
   return(ADC_GetConversionValue(ADC1));
 }
