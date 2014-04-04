@@ -32,9 +32,11 @@
 #include <f3d_systick.h>
 #include <f3d_uart.h>
 #include <f3d_i2c.h>
+#include <ds_nordic.h>
+#include <nrf24l01.h>
 #include <stdio.h>
 
-
+/*
 //draw circle funtion 
 void draw_circle(int radius, int ox, int oy, uint16_t color){
   int x,y;
@@ -46,6 +48,7 @@ void draw_circle(int radius, int ox, int oy, uint16_t color){
   }
 }
 
+*/
 
 int main() { 
   f3d_led_init();
@@ -53,6 +56,7 @@ int main() {
   f3d_systick_init();
   f3d_uart_init();
   f3d_i2c1_init();
+  f3d_nordic_init();
  
 
  
@@ -66,10 +70,45 @@ int main() {
 
   int k=0;
   */
+
+
+
+  
+  /* nrf24l01_initialize_debug(false, 1, false);  // Setup Node at transmitter, Standard Shockburst */
+  nrf24l01_initialize_debug(false, 32, true);     // Enhanced Shockburst, Auto Ack turned on
+  nrf24l01_clear_flush();
+
+
+ // Base Reception
+  char rxdata[32];
+  while(!(nrf24l01base_irq_pin_active() && nrf24l01base_irq_rx_dr_active()));
+  nrf24l01base_read_rx_payload(rxdata, 32);	
+  nrf24l01base_irq_clear_all();
+  f3d_delay_uS(130);
+
+  // Payload Translation
+  printf("Base Data: ");
+  for (index=0;index<32;index++) {
+    printf("%c",rxdata[index]);
+  }
+  printf("\n");
+  
+  for (index=0;index<32;index++) {
+    if ((rxdata[index] >= 'a') && (rxdata[index] <= 'z')) {
+      rxdata[index]-=32;
+    }
+  }
+
+  printf("Base: receive character: %c\n",rxdata);
+  /* rxdata-=32; */
+   printf("Base: upcase: %c\n",rxdata);
+
+
+
   while(1){
     f3d_led_all_on();
-    printf("a\n");
-    //f3d_lcd_fillScreen(BLUE);
+    //printf("a\n");
+    f3d_lcd_fillScreen(BLUE);
     //f3d_lcd_fillScreen(RED);
     //f3d_lcd_fillScreen(GREEN);
     
