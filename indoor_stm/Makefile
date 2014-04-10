@@ -14,6 +14,8 @@ OBJS=  $(STARTUP) main.o \
 	   f3d_systick.o \
 	   f3d_delay.o \
 	   f3d_i2c.o \
+	   f3d_dac.o \
+	   f3d_lcd_sd.o \
 	   newlib_stubs.o \
 	   queue.o \
 	   ds_nordic.o \
@@ -27,13 +29,10 @@ OBJS=  $(STARTUP) main.o \
 	   stm32f30x_pwr.o \
 	   stm32f30x_rtc.o \
 	   stm32f30x_i2c.o \
-	   f3d_lcd_sd.o \
-	   f3d_dac.o \
-	   glcdfont.o \
-	   mmcbb.o \
 	   stm32f30x_dac.o \
 	   stm32f30x_dma.o \
-
+	   glcdfont.o \
+	   mmcbb.o
 
 # include common make file
 include $(TEMPLATEROOT)/Makefile.common

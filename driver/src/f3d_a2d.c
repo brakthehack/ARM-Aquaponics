@@ -6,11 +6,9 @@
  * to read values.  The values will be converted into a 12-bit number.
  */
 void f3d_a2d_init(void) {
-  GPIO_InitTypeDef GPIO_InitStructure;
-  ADC_CommonInitTypeDef ADC_CommonInitStructure;
-  ADC_InitTypeDef ADC_InitStructure;
-
-
+    GPIO_InitTypeDef GPIO_InitStructure;
+    ADC_CommonInitTypeDef ADC_CommonInitStructure;
+    ADC_InitTypeDef ADC_InitStructure;
 
     // initialize the clocks
     RCC_ADCCLKConfig(RCC_ADC12PLLCLK_Div2);
@@ -29,7 +27,7 @@ void f3d_a2d_init(void) {
     ADC_VoltageRegulatorCmd(ADC1, ENABLE);
     f3d_delay_uS(10);
 
-    
+
     ADC_CommonStructInit(&ADC_CommonInitStructure);
     ADC_CommonInitStructure.ADC_Mode=ADC_Mode_Independent;                                                      
     ADC_CommonInitStructure.ADC_Clock = ADC_Clock_AsynClkMode;                    
@@ -63,6 +61,6 @@ void f3d_a2d_init(void) {
 }
 
 int f3d_read_adc(void) {
-  while(ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == RESET);
-  return(ADC_GetConversionValue(ADC1));
+    while(ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == RESET);
+    return(ADC_GetConversionValue(ADC1));
 }

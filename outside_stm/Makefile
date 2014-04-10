@@ -33,7 +33,7 @@ OBJS=  $(STARTUP) main.o \
 	   stm32f30x_i2c.o \
 	   stm32f30x_dac.o \
 	   stm32f30x_dma.o \
-	   stm32f30x_adc.o \
+	   stm32f30x_adc.o
 
 # include common make file
 include $(TEMPLATEROOT)/Makefile.common
