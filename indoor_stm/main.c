@@ -106,6 +106,12 @@ int main() {
     // rxdata-=32; 
     printf("Base: upcase: %c\n",rxdata);
 
+    printf("Base Sending uppercase char: %c\n", rxdata);
+    nrf24l01_set_as_tx();
+    nrf24l01_write_tx_payload(rxdata, 32, true);
+    while(!(nrf24l01_irq_pin_active() && (nrf24l01_irq_tx_ds_active() || nrf24l01_irq_max_rt_active())));
+    nrf24l01_irq_clear_all();
+    nrf24l01_set_as_rx(true);
 
     while(1){
         f3d_led_all_on();
