@@ -46,13 +46,41 @@ int main(){
     char data[32];
     char index;
 
-    for (index=0;index<32;index++) {
+    //printf("%d\n",f3d_read_adc());
+
+    int mdata=f3d_read_adc();
+
+    printf("\n");
+    printf("%d\n",mdata);
+
+    data[3]= mdata;
+    mdata=mdata>>8;
+    //printf("%x",data[3]);
+    
+    data[2]= mdata;
+    mdata=mdata>>8;
+    data[1]=  mdata;
+    mdata=mdata>>8;
+    data[0]=  mdata;
+    
+    
+    
+    
+
+    
+
+    /*
+    for (index=0;index<32;index+=4) {
         data[index] = 'a'+index;
     }
     printf("Node Data: ");
     for (index=0;index<32;index++) {
         printf("%c",data[index]);
     }
+    
+    */
+   
+
     printf("\n");
     printf("Node: transmit character %c\n",data);
     nrf24l01base_write_tx_payload(data, 32, true);      // nordic writes a character
@@ -91,7 +119,7 @@ int main(){
 
     while(1){
         //printf("%d\n",f3d_read_adc());
-        printf("a\n");
+        //printf("a\n");
         f3d_led_all_on();
         f3d_delay_uS(100);
         f3d_led_all_off();
