@@ -18,8 +18,8 @@ OBJS=  $(STARTUP) main.o \
 	   f3d_dac.o \
 	   f3d_timer2.o \
 	   f3d_a2d.o \
-	   ds_nordic.o \
-	   nrf24l01.o \
+	   ds_wifibase.o \
+	   nrf24l01base.o \
 	   newlib_stubs.o \
 	   queue.o \
 	   stm32f30x_rcc.o \

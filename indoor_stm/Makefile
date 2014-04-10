@@ -16,6 +16,8 @@ OBJS=  $(STARTUP) main.o \
 	   f3d_i2c.o \
 	   newlib_stubs.o \
 	   queue.o \
+	   ds_nordic.o \
+	   nrf24l01.o \
 	   stm32f30x_rcc.o \
 	   stm32f30x_gpio.o \
 	   stm32f30x_usart.o \

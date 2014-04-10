@@ -1,37 +1,37 @@
-/* main.c --- 
- * 
- * Filename: main.c
- * Description: 
- * Author: 
- * Maintainer: 
- * Created: Thu Jan 10 11:23:43 2013
- * Last-Updated: 
- *           By: 
- *     Update #: 0
- * Keywords: 
- * Compatibility: 
- * 
- */
+/* main.c ---
+*
+* Filename: main.c
+* Description:
+* Author:
+* Maintainer:
+* Created: Thu Jan 10 11:23:43 2013
+* Last-Updated:
+* By:
+* Update #: 0
+* Keywords:
+* Compatibility:
+*
+*/
 
-/* Commentary: 
- * 
- * 
- * 
- */
+/* Commentary:
+*
+*
+*
+*/
 
 /* Change log:
- * 
- * 
- */
+*
+*
+*/
 /* Code: */
 
-#include <stm32f30x.h>  // Pull in include files for F30x standard drivers 
-#include <f3d_led.h>     // Pull in include file for the local drivers
+#include <stm32f30x.h> // Pull in include files for F30x standard drivers
+#include <f3d_led.h> // Pull in include file for the local drivers
 #include <f3d_button.h>
 #include <f3d_uart.h>
 #include <f3d_systick.h>
 #include <f3d_rtc.h>
-#include <schedule.h> 
+#include <schedule.h>
 #include <f3d_delay.h>
 #include <ds_nordic.h>
 #include <ds_wifibase.h>
@@ -39,7 +39,7 @@
 #include <nrf24l01base.h>
 #include <stdio.h>
 
-int main(void) { 
+int main(void) {
 
   setvbuf(stdin, NULL, _IONBF, 0);
   setvbuf(stdout, NULL, _IONBF, 0);
@@ -53,12 +53,12 @@ int main(void) {
   ds_nordic_init();
   ds_wifibase_init();
 
-  /* nrf24l01_initialize_debug(false, 1, false);  // Setup Node at transmitter, Standard Shockburst */
-  nrf24l01_initialize_debug(false, 32, true);     // Enhanced Shockburst, Auto Ack turned on
+  /* nrf24l01_initialize_debug(false, 1, false); // Setup Node at transmitter, Standard Shockburst */
+  nrf24l01_initialize_debug(false, 32, true); // Enhanced Shockburst, Auto Ack turned on
   nrf24l01_clear_flush();
 
-  //   nrf24l01base_initialize_debug(true, 1, false);  // setup wifibase as a receiver, Standard Shockburst
-  nrf24l01base_initialize_debug(true, 32, true);       // Enhanced Shockburst, Auto Ack turned on
+  // nrf24l01base_initialize_debug(true, 1, false); // setup wifibase as a receiver, Standard Shockburst
+  nrf24l01base_initialize_debug(true, 32, true); // Enhanced Shockburst, Auto Ack turned on
   nrf24l01base_clear_flush();
 
   printf("\n#### Begin Wifi Test ####\n");
@@ -76,7 +76,7 @@ int main(void) {
   printf("\n");
    
   printf("Node: transmit character %c\n",data);
-  nrf24l01_write_tx_payload(data, 32, true);      // nordic writes a character
+  nrf24l01_write_tx_payload(data, 32, true); // nordic writes a character
   while(!(nrf24l01_irq_pin_active() && (nrf24l01_irq_tx_ds_active() || nrf24l01_irq_max_rt_active()))); // wait until it is gone
 
   // Node Listen Mode if the maximum retry limit was not hit
@@ -87,9 +87,16 @@ int main(void) {
   else {
     nrf24l01_flush_tx(); //get the unsent character out of the TX FIFO
     nrf24l01_irq_clear_all(); //clear all interrupts
-    //    printf("Node: Failed to send %c\n",data);
-  } 
+    // printf("Node: Failed to send %c\n",data);
+  }
   
+
+
+
+
+
+
+
   // Base Reception
   char rxdata[32];
   while(!(nrf24l01base_irq_pin_active() && nrf24l01base_irq_rx_dr_active()));
@@ -142,13 +149,13 @@ int main(void) {
 
   while (1);
   /*
-  while (1) {
-    if (systick_flag) {
-      systick_flag=0;
-      schedule();
-    }
-  }
-  */
+while (1) {
+if (systick_flag) {
+systick_flag=0;
+schedule();
+}
+}
+*/
 }
 
 #ifdef USE_FULL_ASSERT

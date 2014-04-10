@@ -11,6 +11,12 @@ equipment.  Once we got our STM, moisture sensor, LCD, and nordic all working
 properly, the software seemed to come fairly quickly.  LCD code was used from
 the previous lab and we were able to get access to the previous digital
 systems lab for our DAC and analog to digital converter.  
+For the moisture sensor, we are getting correct values from it. But we haven't
+got a chance to test the highest possible value (put it in water). Overall it 
+is working great, very responsive.
+We are going well as we planned and there is nothing changed about the block 
+diagram for now. We have attached the powerpoint in the folder but nothing 
+has to be changed.
 
 Discussion(each team member):
 
@@ -20,8 +26,7 @@ Weekly progress:
 - Went to store and bought aquaponics equipment
 - Wrote LCD code to drive the LCD
 - Wrote code to get moisture data
-- Assembled main file for indoor stm
-- Attached and Updated the powerpoint in the folder
+- Assembled main file for indoor stm/outside stm
 
 Challenges: 
 
