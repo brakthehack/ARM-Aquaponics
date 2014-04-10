@@ -32,6 +32,7 @@
 #include <f3d_systick.h>
 #include <f3d_uart.h>
 #include <f3d_i2c.h>
+#include <schedule.h>
 #include <ds_nordic.h>
 #include <nrf24l01.h>
 #include <stdio.h>

@@ -39,6 +39,7 @@ int main(){
     ds_wifibase_init();
     f3d_delay_uS(10);
 
+    
 
     //   nrf24l01base_initialize_debug(true, 1, false);  // setup wifibase as a receiver, Standard Shockburst
     nrf24l01base_initialize_debug(true, 32, true);       // Enhanced Shockburst, Auto Ack turned on
@@ -66,9 +67,12 @@ int main(){
     }
 
     printf("Base: receive character: %c\n",rxdata);
-    /* rxdata-=32; */
+    // rxdata-=32; 
     printf("Base: upcase: %c\n",rxdata);
 
+ 
+
+    
     // Base Transmission
     printf("Base: Sending Upcase char: %c\n",rxdata);
     nrf24l01base_set_as_tx();
@@ -77,8 +81,9 @@ int main(){
     nrf24l01base_irq_clear_all();
     nrf24l01base_set_as_rx(true);
 
-    while(1){
-        //printf("%d\n",f3d_read_adc());
+    
+    while(!){
+      //printf("%d\n",f3d_read_adc());
         printf("a\n");
         f3d_led_all_on();
         f3d_delay_uS(100);

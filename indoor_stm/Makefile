@@ -20,6 +20,7 @@ OBJS=  $(STARTUP) main.o \
 	   queue.o \
 	   ds_nordic.o \
 	   nrf24l01.o \
+	   schedule.o \
 	   stm32f30x_rcc.o \
 	   stm32f30x_gpio.o \
 	   stm32f30x_usart.o \
