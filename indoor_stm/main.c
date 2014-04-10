@@ -51,6 +51,59 @@ f3d_lcd_drawPixel(x+ox,y+oy,color);
 
 */
 
+volatile int packet_received = 0;
+char rxdata[32];
+char txdata[32] = { "Submission received" };
+char index;
+
+int read_moisture_data(char *data) {
+    int result = 0;
+    result |= (int) data[0];
+    result = result << 8;
+    result |= (int) data[1];
+    result = result << 8;
+    result |= (int) data[2];
+    result = result << 8;
+    result |= (int) data[3];
+    return result;
+}
+
+void read_rx() {
+    nrf24l01_read_rx_payload(rxdata, 32);
+    nrf24l01_irq_clear_all();
+    f3d_delay_uS(130);
+
+    // Payload Translation
+    printf("Base Data: ");
+    printf("%d\n", read_moisture_data(rxdata));
+    /*
+    for (index=0;index<32;index++) {
+        printf("%c",rxdata[index]);
+    }
+    printf("\n");
+
+    for (index=0;index<32;index++) {
+        if ((rxdata[index] >= 'a') && (rxdata[index] <= 'z')) {
+            rxdata[index]-=32;
+        }
+    }
+    
+    printf("Base: receive character: %c\n",rxdata);
+    // rxdata-=32; 
+    printf("Base: upcase: %c\n",rxdata);
+    
+    printf("Base Sending uppercase char: %c\n", rxdata);
+    */
+    printf("Sending %s\n", txdata);
+    nrf24l01_set_as_tx();
+    nrf24l01_write_tx_payload(txdata, 32, true);
+    while(!(nrf24l01_irq_pin_active() && (nrf24l01_irq_tx_ds_active() || nrf24l01_irq_max_rt_active())));
+    nrf24l01_irq_clear_all();
+    nrf24l01_set_as_rx(true);
+    nrf24l01_clear_flush();
+
+}
+
 int main() { 
     f3d_delay_init();
     f3d_delay_uS(10);
@@ -66,59 +119,19 @@ int main() {
     f3d_delay_uS(10);
     ds_nordic_init();
     f3d_delay_uS(10);
-
-    /*
-
-       f3d_lcd_fillScreen(WHITE);
-       f3d_lcd_drawChar(20,80,'X',RED,WHITE);
-       f3d_lcd_drawChar(60,80,'Y',GREEN,WHITE);
-       f3d_lcd_drawChar(100,80,'Z',BLUE,WHITE);
-       f3d_lcd_drawString(50,10,"GYRO",BLACK,WHITE);
-
-       int k=0;
-       */
-    //nrf24l01_initialize_debug(true, 1, false);  // setup wifibase as a receiver, Standard Shockburst
-    nrf24l01_initialize_debug(true, 32, true);       // Enhanced Shockburst, Auto Ack turned on
+    nrf24l01_initialize_debug(true, 32, true); // Enhanced Shockburst, Auto Ack turned on
     nrf24l01_clear_flush();
-    printf("Begin wifi test\n");
-    // Base Reception
-    char rxdata[32];
-    char index;
-    while(!(nrf24l01_irq_pin_active() && nrf24l01_irq_rx_dr_active()));
-    nrf24l01_read_rx_payload(rxdata, 32);
-    nrf24l01_irq_clear_all();
-    f3d_delay_uS(130);
 
-    // Payload Translation
-    printf("Base Data: ");
-    for (index=0;index<32;index++) {
-        printf("%c",rxdata[index]);
-    }
-    printf("\n");
+    while (1) {
+        if (packet_received)
+            read_rx();
 
-    for (index=0;index<32;index++) {
-        if ((rxdata[index] >= 'a') && (rxdata[index] <= 'z')) {
-            rxdata[index]-=32;
-        }
-    }
-
-    printf("Base: receive character: %c\n",rxdata);
-    // rxdata-=32; 
-    printf("Base: upcase: %c\n",rxdata);
-
-    printf("Base Sending uppercase char: %c\n", rxdata);
-    nrf24l01_set_as_tx();
-    nrf24l01_write_tx_payload(rxdata, 32, true);
-    while(!(nrf24l01_irq_pin_active() && (nrf24l01_irq_tx_ds_active() || nrf24l01_irq_max_rt_active())));
-    nrf24l01_irq_clear_all();
-    nrf24l01_set_as_rx(true);
-
-    while(1){
         f3d_led_all_on();
-        printf("a\n");
+        printf("%d %d\n", 4 * (sizeof(char)), sizeof(int));
         f3d_lcd_fillScreen(BLUE);
         f3d_lcd_fillScreen(RED);
         f3d_lcd_fillScreen(GREEN);
+        f3d_led_all_off();
     }
 
 }
