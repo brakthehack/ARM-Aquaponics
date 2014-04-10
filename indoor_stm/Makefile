@@ -11,7 +11,7 @@ OBJS=  $(STARTUP) main.o \
 	   f3d_led.o \
 	   f3d_uart.o \
 	   f3d_button.o \
-	   f3d_systick.o \
+	   f3d_systick_indoor.o \
 	   f3d_delay.o \
 	   f3d_i2c.o \
 	   f3d_dac.o \
