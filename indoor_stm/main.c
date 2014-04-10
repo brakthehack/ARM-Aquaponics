@@ -77,7 +77,7 @@ int main() {
 
        int k=0;
        */
-    nrf24l01_initialize_debug(true, 1, false);  // setup wifibase as a receiver, Standard Shockburst
+    //nrf24l01_initialize_debug(true, 1, false);  // setup wifibase as a receiver, Standard Shockburst
     nrf24l01_initialize_debug(true, 32, true);       // Enhanced Shockburst, Auto Ack turned on
     nrf24l01_clear_flush();
     printf("Begin wifi test\n");
