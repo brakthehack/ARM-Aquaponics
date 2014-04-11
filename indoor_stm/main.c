@@ -37,24 +37,16 @@
 #include <nrf24l01.h>
 #include <stdio.h>
 
-/*
-//draw circle funtion 
-void draw_circle(int radius, int ox, int oy, uint16_t color){
-int x,y;
-for (x=-radius; x<radius; x++){
-int height=(int)sqrt(radius*radius-x*x);
-for(y=-height;y<height;y++){
-f3d_lcd_drawPixel(x+ox,y+oy,color);
-}
-}
-}
 
-*/
+
 
 volatile int packet_received = 0;
 char rxdata[32];
 char txdata[32] = { "Submission received" };
 char index;
+
+volatile int lcd_update=0;
+volatile int lcd_update_counter=0;
 
 int read_moisture_data(char *data) {
     int result = 0;
@@ -104,6 +96,85 @@ void read_rx() {
 
 }
 
+//draw circle funtion 
+void draw_circle(int radius, int ox, int oy, uint16_t color){
+  int x,y;
+  for (x=-radius; x<radius; x++){
+    int height=(int)sqrt(radius*radius-x*x);
+    for(y=-height;y<height;y++){
+      f3d_lcd_drawPixel(x+ox,y+oy,color);
+    }
+  }
+}
+
+void lcd_draw_base(){
+  f3d_lcd_fillScreen(WHITE);
+  f3d_lcd_drawString(10,5,"TIME: ",BLACK,WHITE);
+
+  //drawing chart
+  int h,v;
+  //the chart is 100x100 pixels
+  for(h=15;h<115;h++){
+    f3d_lcd_drawPixel(h,120,BLACK);
+  }
+  for(v=120;v>20;v--){
+    f3d_lcd_drawPixel(15,v,BLACK);
+  }
+  f3d_lcd_drawString(5,115,"L",BLACK,WHITE);
+  f3d_lcd_drawString(5,65,"M",BLACK,WHITE);
+  f3d_lcd_drawString(5,20,"H",BLACK,WHITE);
+  f3d_lcd_drawString(105,125,"NOW",BLACK,WHITE);
+
+  //init pump status will be red
+  draw_circle(8,10,150,RED);
+  f3d_lcd_drawString(20,145,"PUMP",BLACK,WHITE);
+
+  //battery status drawing
+  int i,k;
+  for(i=75;i<120;i++){
+    f3d_lcd_drawPixel(i,155,BLACK);
+  }
+  for(i=75;i<120;i++){
+    f3d_lcd_drawPixel(i,140,BLACK);
+  }
+  for(k=140;k<156;k++){
+    f3d_lcd_drawPixel(75,k,BLACK);
+  }
+  for(k=140;k<156;k++){
+    f3d_lcd_drawPixel(120,k,BLACK);
+  }
+
+  for(i=120;i<125;i++){
+    f3d_lcd_drawPixel(i,143,BLACK);
+  }
+  for(i=120;i<125;i++){
+    f3d_lcd_drawPixel(i,152,BLACK);
+  }
+  for(k=143;k<153;k++){
+    f3d_lcd_drawPixel(125,k,BLACK);
+  }
+}
+
+void pump_draw(){
+  //status for water pump; green is on; red is stop
+  draw_circle(8,10,150,RED);
+}
+
+void battery_color(){
+  int x,y;
+  for(x=76;x<120;x++){
+    for(y=141;y<155;y++){
+      f3d_lcd_drawPixel(x,y,GREEN);
+    }
+  }
+  for(x=121;x<125;x++){
+    for(y=144;y<152;y++){
+      f3d_lcd_drawPixel(x,y,GREEN);
+    }
+  }
+  f3d_lcd_drawString(87,145,"100%",BLACK,GREEN);
+}
+
 int main() { 
     f3d_delay_init();
     f3d_delay_uS(10);
@@ -122,16 +193,31 @@ int main() {
     nrf24l01_initialize_debug(true, 32, true); // Enhanced Shockburst, Auto Ack turned on
     nrf24l01_clear_flush();
 
+    lcd_draw_base();
+    battery_color();
+    
+
+
+
+
     while (1) {
         if (packet_received)
             read_rx();
 
-        f3d_led_all_on();
-        printf("%d %d\n", 4 * (sizeof(char)), sizeof(int));
-        f3d_lcd_fillScreen(BLUE);
-        f3d_lcd_fillScreen(RED);
-        f3d_lcd_fillScreen(GREEN);
-        f3d_led_all_off();
+      
+        //printf("%d %d\n", 4 * (sizeof(char)), sizeof(int));
+        
+	//update lcd every 4 sec
+	if(lcd_update){
+	  //f3d_lcd_fillScreen(BLUE);
+	  //f3d_lcd_fillScreen(RED);
+	  //f3d_lcd_fillScreen(GREEN);
+	  f3d_led_all_on();
+	  lcd_update=0;
+	  lcd_update_counter=0;
+	  f3d_led_all_off();
+	}
+       
     }
 
 }

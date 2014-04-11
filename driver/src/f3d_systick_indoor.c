@@ -27,9 +27,14 @@
 #include <f3d_led.h>
 #include <f3d_buzzer.h>
 #include <f3d_uart.h>
+#include <f3d_lcd_sd.h>
 #define SYSTICK_INT_SEC 100 // .1 second pulse 10Hz
 
 int hold_count=0, hold_count2=0;
+
+extern volatile int lcd_update_counter;
+extern volatile int lcd_update;
+
 /*
  * User button State
  */
@@ -72,6 +77,14 @@ void SysTick_Handler(void) {
     if (!queue_empty(&txbuf)) {
         flush_uart();
     }
+
+    lcd_update_counter++;
+    //update every 4 second; if every minutes then need to be 600
+    if(lcd_update_counter>=400){
+      lcd_update=1;
+    }
+
+    //lcd_update_counter=0;
 }
 
 /* f3d_systick.c ends here */
