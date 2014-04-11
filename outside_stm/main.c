@@ -12,6 +12,8 @@
 #include <nrf24l01base.h>
 #include <stdio.h>
 
+volatile extern int standby_flag;
+
 int main(){
 
     setvbuf(stdin, NULL, _IONBF, 0);
@@ -63,12 +65,15 @@ int main(){
     mdata=mdata>>8;
     data[0]=  mdata;
     
-    
-    
-    
+    f3d_enter_standby(); 
+    while(1) {
+        if (standby_flag)
+            printf("Standby triggered\n");
 
-    
-
+        f3d_led_all_on();
+        f3d_delay_uS(10000);
+        f3d_led_all_off();
+    }
     /*
     for (index=0;index<32;index+=4) {
         data[index] = 'a'+index;
@@ -115,7 +120,6 @@ int main(){
     nrf24l01base_irq_clear_all();
     f3d_delay_uS(130);
     nrf24l01base_set_as_tx();
-
 
     while(1){
         //printf("%d\n",f3d_read_adc());

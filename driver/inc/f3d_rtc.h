@@ -14,9 +14,13 @@
  */
 
 #include <stm32f30x.h>
+#include <stm32f30x_rtc.h>
+
+volatile extern int standby_flag;
 
 //int LSE_init(void);
-//int RTC_init(void);
 
+void RTC_LSIinit(void);
 void RTC_init(void);
 int rtc_settime(char *buf);
+void f3d_enter_standby(void);
