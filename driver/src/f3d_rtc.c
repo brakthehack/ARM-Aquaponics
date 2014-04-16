@@ -114,6 +114,12 @@ void RTC_LSI_init(void) {
 
 void f3d_enter_standby(void)
 {
+
+    //PWR_BackupAccessCmd(ENABLE); // Enable access to write to the RTC Registers
+    //RCC_BackupResetCmd(ENABLE);
+    //RCC_BackupResetCmd(DISABLE);
+    PWR_BackupAccessCmd(ENABLE); 
+    RTC_WriteProtectionCmd(DISABLE);
     /*
     RTC_AlarmTypeDef  RTC_AlarmStructure;
     RTC_DateTypeDef   RTC_CurrentDate;
@@ -153,27 +159,24 @@ void f3d_enter_standby(void)
 
     // 3. Ensure access to Wakeup auto-reload
     while(RTC_GetFlagStatus(RTC_FLAG_WUTWF) == RESET);
+        // 5. Select the desired clock source.
+    //    DIV8 min = 122.07uS (0x0), max = > 131072s (0xffff)
+    RTC_WakeUpClockConfig(RTC_WakeUpClock_RTCCLK_Div8);
     // 4. Program the value into the wakeup timer.
     RTC_SetWakeUpCounter(0xffff);
-
-    // 5. Select the desired clock source.
-    //    DIV8 min = 122.07uS (0x0), max = > 131072s (0xffff)
-    RTC_WakeUpClockConfig(RTC_WakeUpClock_RTCCLK_Div16);
+ 
     // 6. Re-enable the wakeup timer.
     RTC_WakeUpCmd(ENABLE);
-
-    // 7.  Enable the RTC registers' write protection
-    RTC_WriteProtectionCmd(ENABLE);
-    
-    /* Enable NVIC Wakeup Interrupt and Handler */
+  /* 
+    // Enable NVIC Wakeup Interrupt and Handler
     NVIC_InitTypeDef NVIC_InitStructure;
     NVIC_InitStructure.NVIC_IRQChannel = RTC_WKUP_IRQn;
     NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x08;
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x07;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x08;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
-
-    /* Enable RTC Alarm A Interrupt */
+    */
+    /* Enable RTC Wakeup Timer Interrupt */
     RTC_ITConfig(RTC_IT_WUT, ENABLE);
 
     // Enable the alarm
@@ -183,6 +186,11 @@ void f3d_enter_standby(void)
     PWR_ClearFlag(PWR_FLAG_WU);
 
     RTC_ClearFlag(RTC_FLAG_WUTF);
+   
+
+    // 7.  Enable the RTC registers' write protection
+    RTC_WriteProtectionCmd(ENABLE);
+    PWR_BackupAccessCmd(DISABLE);
 
     /* Request to enter STANDBY mode (Wake Up flag is cleared in PWR_EnterSTANDBYMode function) */
    // PWR_EnterSTANDBYMode();

@@ -40,7 +40,8 @@ int main(){
     f3d_delay_uS(10);
     ds_wifibase_init();
     f3d_delay_uS(10);
-
+    //RTC_init();
+    //RTC_LSI_init();
     /* nrf24l01base_initialize_debug(false, 1, false);  // Setup Node at transmitter, Standard Shockburst */
     nrf24l01base_initialize_debug(false, 32, true);     // Enhanced Shockburst, Auto Ack turned on
     nrf24l01base_clear_flush();
@@ -65,14 +66,27 @@ int main(){
     mdata=mdata>>8;
     data[0]=  mdata;
     
-    f3d_enter_standby(); 
+    //f3d_enter_standby();
+    RTC_DateTypeDef   RTC_CurrentDate;
+    RTC_TimeTypeDef   RTC_CurrentTime;
     while(1) {
-        if (standby_flag)
+
+        RTC_GetTime(RTC_Format_BIN,&RTC_CurrentTime);
+        RTC_GetDate(RTC_Format_BIN,&RTC_CurrentDate);
+
+        if (standby_flag) {
             printf("Standby triggered\n");
+            while (1);
+        }
 
         f3d_led_all_on();
-        f3d_delay_uS(10000);
+        printf("Wakeup Counter: %d\n", RTC_GetWakeUpCounter());
+        printf("%d:%d:%d\n", RTC_CurrentTime.RTC_Hours,
+        RTC_CurrentTime.RTC_Minutes, RTC_CurrentTime.RTC_Seconds);
+        printf("Month: %d Year: %d\n", RTC_CurrentDate.RTC_Month,
+        RTC_CurrentDate.RTC_Year);
         f3d_led_all_off();
+        delay(200);
     }
     /*
     for (index=0;index<32;index+=4) {
