@@ -196,7 +196,9 @@ void battery_color(){
 
 //moisture from 0-2000,0-600 is LOW,601-1200 is MED, >1600 is HIGH
 //the whole graph show ten data,it will pop the oldest one the get the newest data
-void graph(int m_buffer[]){
+
+
+void graph(int m_buffer[],int flush){
   //x start at 15 to 115
   //y start at 20 to 120
   int i,k,z;
@@ -205,12 +207,14 @@ void graph(int m_buffer[]){
   int dot_y[10];
   float dis;
 
+  /*
   //to flush the grahic before printing the new one
   for(i=16;i<=120;i++){
     for(k=15;k<=119;k++){
       f3d_lcd_drawPixel(i,k,WHITE);
     }
   }
+  */
 
   for(i=0;i<=9;i++){
     dot_y[i]=oy+(100-(int)(m_buffer[i]/20));
@@ -227,24 +231,26 @@ void graph(int m_buffer[]){
     if(dot_y[i]-dot_y[i+1]>0){
       for(k=0;k<10;k+=1){
 	dis=(dot_y[i]-dot_y[i+1])/10.00;
-	/*
-	for(z=0;z<3;z++){
-	  draw_circle(2,ox+k,dot_y[i]-(dis*k)-z,BLACK);
+	if(flush){
+	  draw_circle(2,ox+k,dot_y[i]-(dis*k),WHITE);
 	}
-	*/
-	draw_circle(2,ox+k,dot_y[i]-(dis*k),BLACK);  
+
+	else{
+	  draw_circle(2,ox+k,dot_y[i]-(dis*k),BLACK);  
+	}
       }	  
     }
 
     else{
       for(k=0;k<10;k+=1){
 	dis=(dot_y[i+1]-dot_y[i])/10.00;
-	/*
-	for(z=0;z<3;z++){
-	  draw_circle(2,k+ox,dot_y[i]+(dis*k)+z,BLACK);
+	if(flush){
+	  draw_circle(2,k+ox,dot_y[i]+(dis*k),WHITE);
 	}
-	*/
-	draw_circle(2,k+ox,dot_y[i]+(dis*k),BLACK);
+	
+	else{
+	  draw_circle(2,k+ox,dot_y[i]+(dis*k),BLACK);
+	}
       }
     }
     ox+=10;
@@ -253,8 +259,13 @@ void graph(int m_buffer[]){
   //reset back to start point for the following function
   ox=20;
 
-   for(i=0;i<=9;i++){
-    draw_circle(4,ox,dot_y[i],BLUE);
+  for(i=0;i<=9;i++){
+    if(flush){
+      draw_circle(4,ox,dot_y[i],WHITE);
+    }
+    else{
+      draw_circle(4,ox,dot_y[i],BLUE);
+    }
     ox+=10;
     oy=15;
   }
@@ -297,7 +308,7 @@ int main() {
     battery_color();
     
     
-    graph(m_buffer);
+    graph(m_buffer,0);
     //delay(100);
     //m_buffer_update(500,m_buffer);
     //graph(m_buffer);
@@ -308,11 +319,12 @@ int main() {
             read_rx();
 	    m_update=1;
 	    result= read_moisture_data(rxdata);
+	    graph(m_buffer,1);//for flush the graph
 	    m_buffer_update(result,m_buffer);
       }
 
       if(m_update){
-	graph(m_buffer);
+	graph(m_buffer,0);
 	m_update=0;
       }
 
