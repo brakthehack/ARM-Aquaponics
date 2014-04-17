@@ -30,8 +30,6 @@ int main(){
     f3d_delay_uS(10);
     f3d_i2c1_init();
     f3d_delay_uS(10);
-    RTC_init();
-    f3d_delay_uS(10);
     f3d_timer2_init();
     f3d_delay_uS(10);
     f3d_dac_init();
@@ -59,14 +57,14 @@ int main(){
     data[3]= mdata;
     mdata=mdata>>8;
     //printf("%x",data[3]);
-    
+
     data[2]= mdata;
     mdata=mdata>>8;
     data[1]=  mdata;
     mdata=mdata>>8;
     data[0]=  mdata;
-    
-    //f3d_enter_standby();
+
+    f3d_enter_standby();
     RTC_DateTypeDef   RTC_CurrentDate;
     RTC_TimeTypeDef   RTC_CurrentTime;
     while(1) {
@@ -76,29 +74,60 @@ int main(){
 
         if (standby_flag) {
             printf("Standby triggered\n");
-            while (1);
+            //while (1);
         }
 
         f3d_led_all_on();
         printf("Wakeup Counter: %d\n", RTC_GetWakeUpCounter());
         printf("%d:%d:%d\n", RTC_CurrentTime.RTC_Hours,
-        RTC_CurrentTime.RTC_Minutes, RTC_CurrentTime.RTC_Seconds);
+                RTC_CurrentTime.RTC_Minutes, RTC_CurrentTime.RTC_Seconds);
         printf("Month: %d Year: %d\n", RTC_CurrentDate.RTC_Month,
-        RTC_CurrentDate.RTC_Year);
+                RTC_CurrentDate.RTC_Year);
         f3d_led_all_off();
         delay(200);
+        
+        // Enable Wakeup Counter
+        RTC_WakeUpCmd(ENABLE);
+
+        // Enter Stop Mode
+        PWR_EnterSTOPMode(PWR_Regulator_LowPower, PWR_STOPEntry_WFI);
+
+        // Enable Wakeup Counter
+        RTC_WakeUpCmd(DISABLE);
+
+        // After wake-up from STOP reconfigure the system clock
+        RCC_LSEConfig(RCC_HSE_ON);
+
+        // Wait till HSE is ready
+        while (RCC_GetFlagStatus(RCC_FLAG_HSERDY) == RESET)
+        {}
+
+        // Enable PLL
+        RCC_PLLCmd(ENABLE);
+
+        // Wait till PLL is ready
+        while (RCC_GetFlagStatus(RCC_FLAG_PLLRDY) == RESET)
+        {}
+
+        // Select PLL as system clock source
+        RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
+
+        // Wait till PLL is used as system clock source
+        while (RCC_GetSYSCLKSource() != 0x0C)
+        {}
+        
     }
     /*
-    for (index=0;index<32;index+=4) {
-        data[index] = 'a'+index;
-    }
-    printf("Node Data: ");
-    for (index=0;index<32;index++) {
-        printf("%c",data[index]);
-    }
-    
-    */
-   
+       for (index=0;index<32;index+=4) {
+       data[index] = 'a'+index;
+       }
+       printf("Node Data: ");
+       for (index=0;index<32;index++) {
+       printf("%c",data[index]);
+       }
+
+*/
+
 
     printf("\n");
     printf("Node: transmit character %c\n",data);

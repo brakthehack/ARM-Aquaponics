@@ -115,42 +115,89 @@ void RTC_LSI_init(void) {
 void f3d_enter_standby(void)
 {
 
-    //PWR_BackupAccessCmd(ENABLE); // Enable access to write to the RTC Registers
-    //RCC_BackupResetCmd(ENABLE);
-    //RCC_BackupResetCmd(DISABLE);
-    PWR_BackupAccessCmd(ENABLE); 
-    RTC_WriteProtectionCmd(DISABLE);
-    /*
-    RTC_AlarmTypeDef  RTC_AlarmStructure;
-    RTC_DateTypeDef   RTC_CurrentDate;
-    RTC_TimeTypeDef   RTC_CurrentTime;
+    NVIC_InitTypeDef NVIC_InitStructure;
+    EXTI_InitTypeDef EXTI_InitStructure;
+    RTC_InitTypeDef RTC_InitStructure;
 
-    RTC_GetTime(RTC_Format_BIN,&RTC_CurrentTime);
-    RTC_GetDate(RTC_Format_BIN,&RTC_CurrentDate);
-    int current_hour = RTC_CurrentTime.Hours;
-    
-    RTC_InitStructure.RTC_HourFormat = RTC_HourFormat_24;
+    /* Enable the PWR clock */
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG , ENABLE);
+
+
+    /* Allow access to RTC */
+    PWR_BackupAccessCmd(ENABLE);
+
+    //Enable the LSE OSC
+    RCC_LSEConfig(RCC_LSE_ON);
+
+    //wait until LSE is ready
+    while(RCC_GetFlagStatus(RCC_FLAG_LSERDY) == RESET){}
+
+    //Select RTC clk source
+    RCC_RTCCLKConfig(RCC_RTCCLKSource_LSE);
+
+    //SynchPrediv = 0xFF;
+    //AsynchPrediv = 0x7F;
+
+    /* Enable the RTC Clock */
+    RCC_RTCCLKCmd(ENABLE);
+
+    /* Wait for RTC APB registers synchronisation */
+    RTC_WaitForSynchro();
+
+
     RTC_InitStructure.RTC_AsynchPrediv = 0x7F;
-    RTC_InitStructure.RTC_SynchPrediv = 0x0138;
+    RTC_InitStructure.RTC_SynchPrediv   =  0xFF; /* (32KHz / 128) - 1 = 0xFF*/
+    RTC_InitStructure.RTC_HourFormat = RTC_HourFormat_24;
+    RTC_Init(&RTC_InitStructure);
+
+
+    RTC_WakeUpCmd(DISABLE);
+    /* EXTI configuration *******************************************************/
+    EXTI_ClearITPendingBit(EXTI_Line20);
+    EXTI_InitStructure.EXTI_Line = EXTI_Line20;
+    EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+    EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;
+    EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+    EXTI_Init(&EXTI_InitStructure);
     
+    NVIC_InitStructure.NVIC_IRQChannel = RTC_WKUP_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
 
-    // Set the alarm X+1m
-    if (current_hour < 12)
-        RTC_AlarmStructure.RTC_AlarmTime.RTC_H12 = RTC_H12_AM;
-    else
-        RTC_AlarmStructure.RTC_AlarmTime.RTC_H12 = RTC_H12_PM;
 
-    RTC_AlarmStructure.RTC_AlarmTime.RTC_Hours   = RTC_CurrentTime.RTC_Hours;
-    RTC_AlarmStructure.RTC_AlarmTime.RTC_Minutes = RTC_CurrentTime.RTC_Minutes;
-    RTC_AlarmStructure.RTC_AlarmTime.RTC_Seconds = RTC_CurrentTime.RTC_Seconds;
-    RTC_AlarmStructure.RTC_AlarmDateWeekDay = RTC_CurrentDate.RTC_Date;
-    RTC_AlarmStructure.RTC_AlarmDateWeekDaySel = RTC_AlarmDateWeekDaySel_Date;
-    RTC_AlarmStructure.RTC_AlarmMask = RTC_AlarmMask_DateWeekDay;
-    RTC_SetAlarm(RTC_Format_BIN, RTC_Alarm_A, &RTC_AlarmStructure);
-    */
+
+    /* Enable the RTC Wakeup Interrupt */
+    NVIC_InitStructure.NVIC_IRQChannel = RTC_WKUP_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
+    NVIC_SetPriority(RTC_WKUP_IRQn, 0x04);
+    //RTCCLK=32768Hz ; div=16  =>2048Hz
+    RTC_WakeUpClockConfig(RTC_WakeUpClock_RTCCLK_Div16);
+
+    //div 256 =>8Hz  ~ 125ms
+    RTC_SetWakeUpCounter(0xFF); 
+
+    RTC_ClearITPendingBit(RTC_IT_WUT);
+    EXTI_ClearITPendingBit(EXTI_Line20);
+    /* Enable the RTC Wakeup Interrupt */
+    RTC_ITConfig(RTC_IT_WUT, ENABLE);
+
+    /* Enable Wakeup Counter */
+    //RTC_WakeUpCmd(ENABLE);
+
+    //PWR_RTCAccessCmd(DISABLE);
+
+    //disable PWR clock
+    //RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, DISABLE);
+
     // Configure and Set the wakeup counter
     // Disable RTC Wakeup write protection
-    
+    /* 
     // 1. Disable the RTC Write Protection
     RTC_WriteProtectionCmd(DISABLE);
 
@@ -159,15 +206,15 @@ void f3d_enter_standby(void)
 
     // 3. Ensure access to Wakeup auto-reload
     while(RTC_GetFlagStatus(RTC_FLAG_WUTWF) == RESET);
-        // 5. Select the desired clock source.
+    // 5. Select the desired clock source.
     //    DIV8 min = 122.07uS (0x0), max = > 131072s (0xffff)
     RTC_WakeUpClockConfig(RTC_WakeUpClock_RTCCLK_Div8);
     // 4. Program the value into the wakeup timer.
     RTC_SetWakeUpCounter(0xffff);
- 
+
     // 6. Re-enable the wakeup timer.
     RTC_WakeUpCmd(ENABLE);
-  /* 
+
     // Enable NVIC Wakeup Interrupt and Handler
     NVIC_InitTypeDef NVIC_InitStructure;
     NVIC_InitStructure.NVIC_IRQChannel = RTC_WKUP_IRQn;
@@ -175,8 +222,8 @@ void f3d_enter_standby(void)
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x08;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
-    */
-    /* Enable RTC Wakeup Timer Interrupt */
+
+    // Enable RTC Wakeup Timer Interrupt
     RTC_ITConfig(RTC_IT_WUT, ENABLE);
 
     // Enable the alarm
@@ -186,14 +233,17 @@ void f3d_enter_standby(void)
     PWR_ClearFlag(PWR_FLAG_WU);
 
     RTC_ClearFlag(RTC_FLAG_WUTF);
-   
+
 
     // 7.  Enable the RTC registers' write protection
     RTC_WriteProtectionCmd(ENABLE);
     PWR_BackupAccessCmd(DISABLE);
 
-    /* Request to enter STANDBY mode (Wake Up flag is cleared in PWR_EnterSTANDBYMode function) */
-   // PWR_EnterSTANDBYMode();
+    // Request to enter STANDBY mode 
+    // (Wake Up flag is cleared in PWR_EnterSTANDBYMode function)
+    // PWR_EnterSTANDBYMode();
+    */
+
 
 }
 
@@ -254,5 +304,6 @@ int rtc_settime (char *buf) {
 }
 
 void RTC_WKUP_IRQHandler(void) {
-    standby_flag ^= 1;
+    standby_flag = 1;
+    //while(1);
 }
