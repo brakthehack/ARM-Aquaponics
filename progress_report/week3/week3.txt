@@ -1,0 +1,55 @@
+Team Project Progress Report
+Ching Yuen Ng/ Brian Rak
+Week 3
+
+Summary of Progress:
+
+This week we have the LCD grphic done, it is pretty closed to what we want, but need to optimize it. Now we are 
+recieving the data from the other board and update our LCD graphic constantly depending on the period that we have set,
+such as every 15 seconds or every minute.
+Also, we have set up the low power mode so that the board which is powered by solar will be saving power as much as possible.
+But we are not able to wake the board up once it got into the sleep mode. We need more work on this for the next week.
+
+
+Discussion(each team member):
+
+Ching Yuen Ng
+This week we got a lot of work done for the LCD. It is basically done for the graphic, might need to change a few things depending how 
+the things go inthe future.
+
+Weekly progress:
+- created application for LCD graphic.
+- set up different functions to update the status of pump, moisture, battery.
+
+Challenges: 
+There is a few things that got me stuck for a while. the drawing lines between each dot on the graph is kind of hard, because the distance
+of each dot is different. I ended up doing a calculation for their ratio so that the lines could be drawn properly.
+Another thing is to the way we send and revceive the data by using nordic. We have to know the way we pack the buffer other wise the data will be
+corrupted.
+
+
+Planned work for following week:
+- get the motor working
+- get the solar power device attached to the board 
+
+
+
+
+Brian Rak
+
+
+
+
+
+Weekly progress: 
+- created application for low power mode
+- cleaned up the code for different application, so that it is easier to read the code and use them
+
+Challenges:
+
+
+
+
+Planned work for following week:
+- created application for LCD graphic.
+- set up different functions to update the status of pump, moisture, battery.
