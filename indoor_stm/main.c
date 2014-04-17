@@ -48,6 +48,9 @@ char index;
 volatile int lcd_update=0;
 volatile int lcd_update_counter=0;
 
+int m_buffer[10]={500,700,1200,1200,700,300,1300,1500,1900,1700};
+int m_index=9;
+
 int read_moisture_data(char *data) {
     int result = 0;
     result |= (int) data[0];
@@ -155,6 +158,9 @@ void lcd_draw_base(){
   }
 }
 
+
+
+
 void pump_draw(){
   //status for water pump; green is on; red is stop
   draw_circle(8,10,150,RED);
@@ -174,6 +180,79 @@ void battery_color(){
   }
   f3d_lcd_drawString(87,145,"100%",BLACK,GREEN);
 }
+
+
+
+//moisture from 0-2000,0-600 is LOW,601-1200 is MED, >1600 is HIGH
+//the whole graph show ten data,it will pop the oldest one the get the newest data
+void graph(int m_buffer[]){
+  //x start at 15 to 115
+  //y start at 20 to 120
+  int i,k;
+  int ox=20;//15+5
+  int oy=15;//20-5
+  int dot_y[10];
+  float dis;
+
+  //to flush the grahic before printing the new one
+  for(i=16;i<=120;i++){
+    for(k=15;k<=119;k++){
+      f3d_lcd_drawPixel(i,k,WHITE);
+    }
+  }
+
+  for(i=0;i<=9;i++){
+    dot_y[i]=oy+(100-(int)(m_buffer[i]/20));
+    ox+=10;
+    oy=15;
+  }
+  
+  //reset ox to start point for the function below
+  ox=20;
+
+  //joining dots with line
+  for(i=0;i<9;i++){
+    //the next one is higher than last one
+    if(dot_y[i]-dot_y[i+1]>0){
+      for(k=0;k<10;k+=2){
+	dis=(dot_y[i]-dot_y[i+1])/10.00;
+	draw_circle(2,ox+k,dot_y[i]-(dis*k),BLACK); 
+      }	  
+    }
+
+    else{
+      for(k=0;k<10;k+=2){
+	dis=(dot_y[i+1]-dot_y[i])/10.00;
+	draw_circle(2,k+ox,dot_y[i]+(dis*k),BLACK);
+      }
+    }
+    ox+=10;
+  }
+
+  //reset back to start point for the following function
+  ox=20;
+
+   for(i=0;i<=9;i++){
+    draw_circle(4,ox,dot_y[i],BLUE);
+    ox+=10;
+    oy=15;
+  }
+}
+
+//update the m_buffer if receive a new data, pop the oldest one and push the newest one
+void m_buffer_update(int result,int m_buffer[]){
+  int i;
+  for(i=0;i<9;i++){
+    m_buffer[i]=m_buffer[i+1];
+  }
+  m_buffer[9]=result;
+}
+
+
+
+
+
+
 
 int main() { 
     f3d_delay_init();
@@ -196,8 +275,11 @@ int main() {
     lcd_draw_base();
     battery_color();
     
-
-
+    
+    graph(m_buffer);
+    delay(100);
+    m_buffer_update(500,m_buffer);
+    graph(m_buffer);
 
 
     while (1) {
