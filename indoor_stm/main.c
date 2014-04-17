@@ -35,6 +35,7 @@
 #include <schedule.h>
 #include <ds_nordic.h>
 #include <nrf24l01.h>
+#include <math.h>
 #include <stdio.h>
 
 
@@ -43,13 +44,16 @@
 volatile int packet_received = 0;
 char rxdata[32];
 char txdata[32] = { "Submission received" };
-char index;
+//char index;
+int result;
+char pump;
 
 volatile int lcd_update=0;
 volatile int lcd_update_counter=0;
 
-int m_buffer[10]={500,700,1200,1200,700,300,1300,1500,1900,1700};
-int m_index=9;
+int m_buffer[10]={0,0,0,0,0,0,0,0,0,0};
+//int m_index=9;
+int m_update=0;
 
 int read_moisture_data(char *data) {
     int result = 0;
@@ -63,6 +67,16 @@ int read_moisture_data(char *data) {
     return result;
 }
 
+char read_pump_data(char *data){
+  char pump=data[4];
+  return pump;
+}
+
+int read_battery_data(char *data){
+  //something
+
+}
+
 void read_rx() {
     nrf24l01_read_rx_payload(rxdata, 32);
     nrf24l01_irq_clear_all();
@@ -70,7 +84,7 @@ void read_rx() {
 
     // Payload Translation
     printf("Base Data: ");
-    printf("%d\n", read_moisture_data(rxdata));
+    printf("%d\n",read_moisture_data(rxdata));
     /*
     for (index=0;index<32;index++) {
         printf("%c",rxdata[index]);
@@ -158,10 +172,7 @@ void lcd_draw_base(){
   }
 }
 
-
-
-
-void pump_draw(){
+void pump_draw(char pump){
   //status for water pump; green is on; red is stop
   draw_circle(8,10,150,RED);
 }
@@ -188,7 +199,7 @@ void battery_color(){
 void graph(int m_buffer[]){
   //x start at 15 to 115
   //y start at 20 to 120
-  int i,k;
+  int i,k,z;
   int ox=20;//15+5
   int oy=15;//20-5
   int dot_y[10];
@@ -214,15 +225,25 @@ void graph(int m_buffer[]){
   for(i=0;i<9;i++){
     //the next one is higher than last one
     if(dot_y[i]-dot_y[i+1]>0){
-      for(k=0;k<10;k+=2){
+      for(k=0;k<10;k+=1){
 	dis=(dot_y[i]-dot_y[i+1])/10.00;
-	draw_circle(2,ox+k,dot_y[i]-(dis*k),BLACK); 
+	/*
+	for(z=0;z<3;z++){
+	  draw_circle(2,ox+k,dot_y[i]-(dis*k)-z,BLACK);
+	}
+	*/
+	draw_circle(2,ox+k,dot_y[i]-(dis*k),BLACK);  
       }	  
     }
 
     else{
-      for(k=0;k<10;k+=2){
+      for(k=0;k<10;k+=1){
 	dis=(dot_y[i+1]-dot_y[i])/10.00;
+	/*
+	for(z=0;z<3;z++){
+	  draw_circle(2,k+ox,dot_y[i]+(dis*k)+z,BLACK);
+	}
+	*/
 	draw_circle(2,k+ox,dot_y[i]+(dis*k),BLACK);
       }
     }
@@ -277,28 +298,40 @@ int main() {
     
     
     graph(m_buffer);
-    delay(100);
-    m_buffer_update(500,m_buffer);
-    graph(m_buffer);
+    //delay(100);
+    //m_buffer_update(500,m_buffer);
+    //graph(m_buffer);
 
 
     while (1) {
-        if (packet_received)
+      if (packet_received){
             read_rx();
+	    m_update=1;
+	    result= read_moisture_data(rxdata);
+	    m_buffer_update(result,m_buffer);
+      }
 
-      
+      if(m_update){
+	graph(m_buffer);
+	m_update=0;
+      }
+
+
+
+
+
         //printf("%d %d\n", 4 * (sizeof(char)), sizeof(int));
         
 	//update lcd every 4 sec
-	if(lcd_update){
+	//if(lcd_update){
 	  //f3d_lcd_fillScreen(BLUE);
 	  //f3d_lcd_fillScreen(RED);
 	  //f3d_lcd_fillScreen(GREEN);
-	  f3d_led_all_on();
-	  lcd_update=0;
-	  lcd_update_counter=0;
-	  f3d_led_all_off();
-	}
+	  //f3d_led_all_on();
+	  //lcd_update=0;
+	  //lcd_update_counter=0;
+	  //f3d_led_all_off();
+      //}
        
     }
 
