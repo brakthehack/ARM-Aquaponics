@@ -23,4 +23,4 @@ volatile extern int standby_flag;
 void RTC_LSIinit(void);
 void RTC_init(void);
 int rtc_settime(char *buf);
-void f3d_enter_standby(void);
+void f3d_enter_stop(void);

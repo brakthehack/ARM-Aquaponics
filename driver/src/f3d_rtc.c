@@ -112,7 +112,7 @@ void RTC_LSI_init(void) {
  * @retval None
  */
 
-void f3d_enter_standby(void)
+void f3d_enter_stop(void)
 {
 
     NVIC_InitTypeDef NVIC_InitStructure;
@@ -152,11 +152,11 @@ void f3d_enter_standby(void)
     RTC_Init(&RTC_InitStructure);
 
 
-    RTC_WakeUpCmd(DISABLE);
     /* EXTI configuration *******************************************************/
+    /*
     EXTI_ClearITPendingBit(EXTI_Line20);
     EXTI_InitStructure.EXTI_Line = EXTI_Line20;
-    EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+    EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Event;
     EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;
     EXTI_InitStructure.EXTI_LineCmd = ENABLE;
     EXTI_Init(&EXTI_InitStructure);
@@ -169,7 +169,7 @@ void f3d_enter_standby(void)
 
 
 
-    /* Enable the RTC Wakeup Interrupt */
+    // Enable the RTC Wakeup Interrupt
     NVIC_InitStructure.NVIC_IRQChannel = RTC_WKUP_IRQn;
     NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
@@ -177,18 +177,20 @@ void f3d_enter_standby(void)
     NVIC_Init(&NVIC_InitStructure);
     NVIC_SetPriority(RTC_WKUP_IRQn, 0x04);
     //RTCCLK=32768Hz ; div=16  =>2048Hz
-    RTC_WakeUpClockConfig(RTC_WakeUpClock_RTCCLK_Div16);
 
     //div 256 =>8Hz  ~ 125ms
-    RTC_SetWakeUpCounter(0xFF); 
 
     RTC_ClearITPendingBit(RTC_IT_WUT);
     EXTI_ClearITPendingBit(EXTI_Line20);
-    /* Enable the RTC Wakeup Interrupt */
+    // Enable the RTC Wakeup Interrupt
+    
     RTC_ITConfig(RTC_IT_WUT, ENABLE);
-
+    */
     /* Enable Wakeup Counter */
-    //RTC_WakeUpCmd(ENABLE);
+    RTC_WakeUpCmd(DISABLE);
+    RTC_SetWakeUpCounter(0xFFFF); 
+    RTC_WakeUpClockConfig(RTC_WakeUpClock_RTCCLK_Div2);
+    RTC_WakeUpCmd(ENABLE);
 
     //PWR_RTCAccessCmd(DISABLE);
 
@@ -243,8 +245,6 @@ void f3d_enter_standby(void)
     // (Wake Up flag is cleared in PWR_EnterSTANDBYMode function)
     // PWR_EnterSTANDBYMode();
     */
-
-
 }
 
 

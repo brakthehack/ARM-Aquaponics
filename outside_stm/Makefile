@@ -8,6 +8,7 @@ ASFLAGS = -g
 # object files
 
 OBJS=  $(STARTUP) main.o \
+	   application.o \
 	   f3d_led.o \
 	   f3d_uart.o \
 	   f3d_button.o \
