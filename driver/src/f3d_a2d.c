@@ -60,7 +60,8 @@ void f3d_a2d_init(void) {
 
 }
 
-int f3d_read_adc(void) {
+int f3d_read_adc(void) { 
+    ADC_StartConversion(ADC1);
     while(ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == RESET);
     return(ADC_GetConversionValue(ADC1));
 }

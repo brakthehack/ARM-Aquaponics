@@ -4,6 +4,9 @@
 
 #include "application.h"
 
+RTC_DateTypeDef   RTC_CurrentDate;
+RTC_TimeTypeDef   RTC_CurrentTime;
+
 // sends a packet over the network using the nordics
 // converts data to send it over the network if it is not of type char *
 void app_send_nordic_packet(char *txdata, char *rxdata) {
@@ -80,7 +83,8 @@ void app_init(void) {
     f3d_delay_uS(10);
     ds_wifibase_init();
     f3d_delay_uS(10);
-    RTC_init();
+    f3d_stop_init();
+    //RTC_init();
     //RTC_LSI_init();
 
     /* nrf24l01base_initialize_debug(false, 1, false); // Setup Node at transmitter, Standard Shockburst */
@@ -91,12 +95,6 @@ void app_init(void) {
 // reads and stores data into a buffer until full
 void app_read_moisture_data(int *data) {
     *data = f3d_read_adc();
-}
-
-// enters STOP mode to conserve power
-// wakes up using the EXTI hardware interrupt
-void app_enter_stop_mode(void) {
-    f3d_enter_stop();
 }
 
 // turns on the pump
@@ -123,47 +121,29 @@ void app_read_battery_power(float *data) {
 
 }
 
-void app_test_wakeup(void) {
+void app_enter_stop(void) {
     //f3d_led_all_on();
-    RTC_DateTypeDef   RTC_CurrentDate;
-    RTC_TimeTypeDef   RTC_CurrentTime;
-
+    RTC_GetTime(RTC_Format_BIN,&RTC_CurrentTime);
+    
     printf("Wakeup Counter: %d\n", RTC_GetWakeUpCounter());
+    printf("WUT_IT_Status : %d\n",RTC_GetITStatus(RTC_IT_WUT));
     printf("%d:%d:%d\n", RTC_CurrentTime.RTC_Hours,
             RTC_CurrentTime.RTC_Minutes, RTC_CurrentTime.RTC_Seconds);
     printf("Month: %d Year: %d\n", RTC_CurrentDate.RTC_Month,
-            RTC_CurrentDate.RTC_Year); /*
+            RTC_CurrentDate.RTC_Year); 
+    
+    delay(1000);    
+    //f3d_led_all_off();
+    //delay(200);
+
+    // Enable Wakeup Counter
+    //RTC_WakeUpCmd(ENABLE);
+
     f3d_led_all_off();
-    delay(200);
-
-    // Enable Wakeup Counter
-    RTC_WakeUpCmd(ENABLE);
-
     // Enter Stop Mode
-    PWR_EnterSTOPMode(PWR_Regulator_LowPower, PWR_STOPEntry_WFI);
-
-    // Enable Wakeup Counter
-    RTC_WakeUpCmd(DISABLE);
-
-    // After wake-up from STOP reconfigure the system clock
-    RCC_LSEConfig(RCC_HSE_ON);
-
-    // Wait till HSE is ready
-    while (RCC_GetFlagStatus(RCC_FLAG_HSERDY) == RESET)
-    {}
-
-    // Enable PLL
-    RCC_PLLCmd(ENABLE);
-
-    // Wait till PLL is ready
-    while (RCC_GetFlagStatus(RCC_FLAG_PLLRDY) == RESET)
-    {}
-
-    // Select PLL as system clock source
-    RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
-    // Wait till PLL is used as system clock source
-    while (RCC_GetSYSCLKSource() != 0x0C)
-    {} */
+    PWR_EnterSleepMode(PWR_SLEEPEntry_WFI); 
+    //app_init2(); 
+    f3d_led_all_on();
 }
 
 void app_print_nordic_data(char *data) {
@@ -176,3 +156,36 @@ void app_print_nordic_data(char *data) {
         printf("%c",data[index]);
     }
 }
+
+void app_init2(void) {
+    setvbuf(stdin, NULL, _IONBF, 0);
+    setvbuf(stdout, NULL, _IONBF, 0);
+    setvbuf(stderr, NULL, _IONBF, 0);
+
+    f3d_delay_init();
+    f3d_delay_uS(10);
+    f3d_led_init();
+    f3d_delay_uS(10);
+    f3d_uart_init();
+    f3d_delay_uS(10);
+    f3d_systick_init();
+    f3d_delay_uS(10);
+    f3d_i2c1_init();
+    f3d_delay_uS(10);
+    f3d_timer2_init();
+    f3d_delay_uS(10);
+    f3d_dac_init();
+    f3d_delay_uS(10);
+    f3d_a2d_init();
+    f3d_delay_uS(10);
+    ds_wifibase_init();
+    f3d_delay_uS(10);
+    //f3d_stop_init();
+    //RTC_init();
+    //RTC_LSI_init();
+
+    /* nrf24l01base_initialize_debug(false, 1, false); // Setup Node at transmitter, Standard Shockburst */
+    nrf24l01base_initialize_debug(false, 32, true); // Enhanced Shockburst, Auto Ack turned on
+    nrf24l01base_clear_flush();
+}
+

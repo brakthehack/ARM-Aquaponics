@@ -51,7 +51,7 @@ int app_check_pump_status(void);
 // stores the data into the pointer
 void app_read_battery_power(float *data);
 
-void app_test_wakeup(void);
+void app_enter_stop(void);
 void app_print_nordic_data(char *data);
 
 #endif /* _APPLICATION_H_ */

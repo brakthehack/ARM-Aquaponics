@@ -112,7 +112,7 @@ void RTC_LSI_init(void) {
  * @retval None
  */
 
-void f3d_enter_stop(void)
+void f3d_stop_init(void)
 {
 
     NVIC_InitTypeDef NVIC_InitStructure;
@@ -126,6 +126,7 @@ void f3d_enter_stop(void)
 
     /* Allow access to RTC */
     PWR_BackupAccessCmd(ENABLE);
+    RTC_WriteProtectionCmd(DISABLE);
 
     //Enable the LSE OSC
     RCC_LSEConfig(RCC_LSE_ON);
@@ -153,10 +154,10 @@ void f3d_enter_stop(void)
 
 
     /* EXTI configuration *******************************************************/
-    /*
+    
     EXTI_ClearITPendingBit(EXTI_Line20);
     EXTI_InitStructure.EXTI_Line = EXTI_Line20;
-    EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Event;
+    EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
     EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;
     EXTI_InitStructure.EXTI_LineCmd = ENABLE;
     EXTI_Init(&EXTI_InitStructure);
@@ -185,66 +186,17 @@ void f3d_enter_stop(void)
     // Enable the RTC Wakeup Interrupt
     
     RTC_ITConfig(RTC_IT_WUT, ENABLE);
-    */
+    
     /* Enable Wakeup Counter */
+    
+    
     RTC_WakeUpCmd(DISABLE);
     RTC_SetWakeUpCounter(0xFFFF); 
-    RTC_WakeUpClockConfig(RTC_WakeUpClock_RTCCLK_Div2);
-    RTC_WakeUpCmd(ENABLE);
-
-    //PWR_RTCAccessCmd(DISABLE);
-
-    //disable PWR clock
-    //RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, DISABLE);
-
-    // Configure and Set the wakeup counter
-    // Disable RTC Wakeup write protection
-    /* 
-    // 1. Disable the RTC Write Protection
-    RTC_WriteProtectionCmd(DISABLE);
-
-    // 2. Disable the Wakeup Timer
-    RTC_WakeUpCmd(DISABLE);
-
-    // 3. Ensure access to Wakeup auto-reload
-    while(RTC_GetFlagStatus(RTC_FLAG_WUTWF) == RESET);
-    // 5. Select the desired clock source.
-    //    DIV8 min = 122.07uS (0x0), max = > 131072s (0xffff)
     RTC_WakeUpClockConfig(RTC_WakeUpClock_RTCCLK_Div8);
-    // 4. Program the value into the wakeup timer.
-    RTC_SetWakeUpCounter(0xffff);
 
-    // 6. Re-enable the wakeup timer.
-    RTC_WakeUpCmd(ENABLE);
-
-    // Enable NVIC Wakeup Interrupt and Handler
-    NVIC_InitTypeDef NVIC_InitStructure;
-    NVIC_InitStructure.NVIC_IRQChannel = RTC_WKUP_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x08;
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x08;
-    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-    NVIC_Init(&NVIC_InitStructure);
-
-    // Enable RTC Wakeup Timer Interrupt
-    RTC_ITConfig(RTC_IT_WUT, ENABLE);
-
-    // Enable the alarm
-    //RTC_AlarmCmd(RTC_Alarm_A, ENABLE);
-
-    // Clear Wakeup flag
-    PWR_ClearFlag(PWR_FLAG_WU);
-
-    RTC_ClearFlag(RTC_FLAG_WUTF);
-
-
-    // 7.  Enable the RTC registers' write protection
+    RTC_ExitInitMode();
     RTC_WriteProtectionCmd(ENABLE);
-    PWR_BackupAccessCmd(DISABLE);
-
-    // Request to enter STANDBY mode 
-    // (Wake Up flag is cleared in PWR_EnterSTANDBYMode function)
-    // PWR_EnterSTANDBYMode();
-    */
+    RTC_WakeUpCmd(ENABLE);
 }
 
 
@@ -305,5 +257,6 @@ int rtc_settime (char *buf) {
 
 void RTC_WKUP_IRQHandler(void) {
     standby_flag = 1;
-    //while(1);
+    RTC_ClearITPendingBit(RTC_IT_WUT);
+    EXTI_ClearITPendingBit(EXTI_Line20);
 }

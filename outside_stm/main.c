@@ -1,4 +1,5 @@
 #include "application.h"
+#include <stdlib.h>
 
 volatile extern int standby_flag;
 
@@ -7,19 +8,6 @@ volatile extern int standby_flag;
 int main(){
 
     app_init();
-    //app_test_wakeup();    
-    //f3d_enter_stop();
-    /*
-       printf("Wakeup Counter: %d\n", RTC_GetWakeUpCounter());
-       int j;
-       for (j = 0; j < 1000; j++) {
-       f3d_delay_uS(1000);
-       }
-       printf("Wakeup Counter: %d\n", RTC_GetWakeUpCounter());
-       int i;
-       while(1);
-       */
-
 
     char txdata[32] = {}, rxdata[32] = {};
     char index;
@@ -38,14 +26,20 @@ int main(){
         //app_read_moisture_data(&moisture);
         //printf("moisture %d\n", moisture);
         printf("seconds %d\n", current_second);
-        if (last_second != current_second && current_second % 15 == 0) {
+        printf("entering standby\n");
+        app_enter_stop();
+        if (standby_flag) {
+            printf("standby triggered\n");
+            standby_flag = 0;
             do  {
                 RTC_GetTime(RTC_Format_BIN,&RTC_CurrentTime);
                 current_second = RTC_CurrentTime.RTC_Seconds;
-
+                
                 last_second = current_second;
                 app_read_moisture_data(&moisture);
                 app_read_moisture_data(&moisture);
+                //moisture = rand() % 2000;
+                printf("moisture %d\n", moisture);
                 app_prepare_nordic_packet(&moisture, txdata);
                 //app_print_nordic_data(txdata);
                 printf("BEFORE SEND %x%x%x%x\n", txdata[0], txdata[1], txdata[2], txdata[3]);
@@ -54,6 +48,7 @@ int main(){
             }while (current_second != 0);
 
         }
+        printf("after while loop\n");
         f3d_led_all_on();
         delay(200);
         f3d_led_all_off();
