@@ -1,11 +1,11 @@
-#include <f3d_a2d.h>
+#include <power.h>
 
 
 /**
  * After this funtion is initialized, the ADC will be ready
  * to read values.  The values will be converted into a 12-bit number.
  */
-void f3d_a2d_init(void) {
+void f3d_a2d_init_power(void) {
     GPIO_InitTypeDef GPIO_InitStructure;
     ADC_CommonInitTypeDef ADC_CommonInitStructure;
     ADC_InitTypeDef ADC_InitStructure;
@@ -18,13 +18,13 @@ void f3d_a2d_init(void) {
 
     // init pin as analog
     GPIO_StructInit(&GPIO_InitStructure);
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
     GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
     GPIO_Init(GPIOF, &GPIO_InitStructure);
 
     // initialize voltage regulator and wait for it to stabilize
-    ADC_VoltageRegulatorCmd(ADC1, ENABLE);
+    ADC_VoltageRegulatorCmd(ADC2, ENABLE);
     f3d_delay_uS(10);
 
 
@@ -34,7 +34,7 @@ void f3d_a2d_init(void) {
     ADC_CommonInitStructure.ADC_DMAAccessMode = ADC_DMAAccessMode_Disabled;             
     ADC_CommonInitStructure.ADC_DMAMode = ADC_DMAMode_OneShot;                  
     ADC_CommonInitStructure.ADC_TwoSamplingDelay = 0;          
-    ADC_CommonInit(ADC1, &ADC_CommonInitStructure);
+    ADC_CommonInit(ADC2, &ADC_CommonInitStructure);
 
 
     ADC_StructInit(&ADC_InitStructure);   
@@ -46,25 +46,23 @@ void f3d_a2d_init(void) {
     ADC_InitStructure.ADC_OverrunMode = ADC_OverrunMode_Disable;   
     ADC_InitStructure.ADC_AutoInjMode = ADC_AutoInjec_Disable;  
     ADC_InitStructure.ADC_NbrOfRegChannel = 1;
-    ADC_Init(ADC1, &ADC_InitStructure);
+    ADC_Init(ADC2, &ADC_InitStructure);
 
     // configure specific adc chanel and timing
-    ADC_RegularChannelConfig(ADC1, ADC_Channel_10, 1, ADC_SampleTime_7Cycles5);;
+    ADC_RegularChannelConfig(ADC2, ADC_Channel_10, 1, ADC_SampleTime_7Cycles5);
 
     // enable the adc and wait for it to become ready
-    ADC_Cmd(ADC1, ENABLE);
-    while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_RDY));
+    ADC_Cmd(ADC2, ENABLE);
+    while(!ADC_GetFlagStatus(ADC2, ADC_FLAG_RDY));
 
     // start the first conversation
-    ADC_StartConversion(ADC1); 
-
+    ADC_StartConversion(ADC2);
 
 }
 
 
-int f3d_read_adc(void) { 
-    ADC_StartConversion(ADC1);
-    while(ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == RESET);
-    return(ADC_GetConversionValue(ADC1));
+int f3d_read_adc_power(void) { 
+    ADC_StartConversion(ADC2);
+    while(ADC_GetFlagStatus(ADC2, ADC_FLAG_EOC) == RESET);
+    return(ADC_GetConversionValue(ADC2));
 }
-

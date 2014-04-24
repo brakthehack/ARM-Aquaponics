@@ -20,7 +20,9 @@ int main(){
     RTC_GetDate(RTC_Format_BIN,&RTC_CurrentDate);
 
     while (1) {
-      //motor_on();
+      motor_on();
+      printf("%d\n",f3d_read_adc_power());
+      /*
         // acquire data
         RTC_GetTime(RTC_Format_BIN,&RTC_CurrentTime);
         current_second = RTC_CurrentTime.RTC_Seconds;
@@ -48,8 +50,8 @@ int main(){
                 delay(500);
             }while (current_second != 0);
 
-        }
-        printf("after while loop\n");
+	    }*/
+      //printf("after while loop\n");
         f3d_led_all_on();
         delay(200);
         f3d_led_all_off();
