@@ -86,6 +86,7 @@ void app_init(void) {
     f3d_stop_init();
     //RTC_init();
     //RTC_LSI_init();
+    //motor_init();
 
     /* nrf24l01base_initialize_debug(false, 1, false); // Setup Node at transmitter, Standard Shockburst */
     nrf24l01base_initialize_debug(false, 32, true); // Enhanced Shockburst, Auto Ack turned on
@@ -183,6 +184,7 @@ void app_init2(void) {
     //f3d_stop_init();
     //RTC_init();
     //RTC_LSI_init();
+    //motor_init();
 
     /* nrf24l01base_initialize_debug(false, 1, false); // Setup Node at transmitter, Standard Shockburst */
     nrf24l01base_initialize_debug(false, 32, true); // Enhanced Shockburst, Auto Ack turned on

@@ -8,7 +8,7 @@ volatile extern int standby_flag;
 int main(){
 
     app_init();
-
+    
     char txdata[32] = {}, rxdata[32] = {};
     char index;
     int moisture;
@@ -20,6 +20,7 @@ int main(){
     RTC_GetDate(RTC_Format_BIN,&RTC_CurrentDate);
 
     while (1) {
+      //motor_on();
         // acquire data
         RTC_GetTime(RTC_Format_BIN,&RTC_CurrentTime);
         current_second = RTC_CurrentTime.RTC_Seconds;

@@ -17,6 +17,7 @@
 #include <schedule.h>
 #include <ds_wifibase.h>
 #include <nrf24l01base.h>
+#include <motor.h>
 #include <stdio.h>
 
 // sends a packet over the network using the nordics

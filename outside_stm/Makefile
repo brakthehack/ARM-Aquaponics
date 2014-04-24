@@ -19,6 +19,7 @@ OBJS=  $(STARTUP) main.o \
 	   f3d_dac.o \
 	   f3d_timer2.o \
 	   f3d_a2d.o \
+	   motor.o \
 	   ds_wifibase.o \
 	   nrf24l01base.o \
 	   newlib_stubs.o \
