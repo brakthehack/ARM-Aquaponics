@@ -21,9 +21,9 @@ void motor_init(void) {
 
 
 void motor_on(void) {
-  MOTOR_LOW()
+  MOTOR_HIGH()
  
 } 
 void motor_off(void) {
-  
+  MOTOR_LOW()
 } 
