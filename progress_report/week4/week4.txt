@@ -16,18 +16,28 @@ everything significantly but we should be all set.
 Discussion(each team member):
 
 Ching Yuen Ng
+
 Weekly progress:
-
-
-
+-have the pump motor working, able to set or reset a bit to turn on/off the motor
+-set up power estimate files, getting signals but need more work.
 
 Challenges: 
+It is really confusing when first setting up the wires for the motor, because 
+the motor driver is able to do many things depending how you wire it up and 
+setting the bits. Such as make the motor running forward or backward, free wheeling or in sleep mode.
 
-
-
+For the power estimate, we need to use A2D to get the signals, but we have been 
+using a A2D for the moisture sensor already, so that we have to seperate the power 
+signal and the moisture signals by using different channels, still need to work on it.
 
 
 Planned work for following week:
+-modify the LCD function to display the power estimate
+-set the time for inside_stm board from receiving the info from outside_stm
+-enchant LCD dispay for final prototype
+-wire up the solar panel to the rechargerablr battery 
+-testing all the functions by taking two stms to outdoor
+-set up the garden
 
 
 
