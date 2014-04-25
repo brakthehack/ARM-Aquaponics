@@ -87,7 +87,6 @@ void app_init(void) {
     //RTC_init();
     //RTC_LSI_init();
     motor_init();
-    f3d_a2d_init_power();
 
     /* nrf24l01base_initialize_debug(false, 1, false); // Setup Node at transmitter, Standard Shockburst */
     nrf24l01base_initialize_debug(false, 32, true); // Enhanced Shockburst, Auto Ack turned on
@@ -96,7 +95,7 @@ void app_init(void) {
 
 // reads and stores data into a buffer until full
 void app_read_moisture_data(int *data) {
-   *data = f3d_read_adc();
+   *data = f3d_read_adc(MOISTURE);
 }
 
 // turns on the pump
@@ -186,7 +185,6 @@ void app_init2(void) {
     //RTC_init();
     //RTC_LSI_init();
     motor_init();
-    f3d_a2d_init_power();
 
     /* nrf24l01base_initialize_debug(false, 1, false); // Setup Node at transmitter, Standard Shockburst */
     nrf24l01base_initialize_debug(false, 32, true); // Enhanced Shockburst, Auto Ack turned on

@@ -21,7 +21,9 @@ int main(){
 
     while (1) {
       motor_on();
-      printf("%d\n",f3d_read_adc_power());
+      printf("battery: %d\n",f3d_read_adc(BATTERY));
+      // printf("a\n");
+      printf("moisture: %d\n",f3d_read_adc(MOISTURE));
       /*
         // acquire data
         RTC_GetTime(RTC_Format_BIN,&RTC_CurrentTime);
