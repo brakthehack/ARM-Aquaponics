@@ -34,6 +34,7 @@ int hold_count=0, hold_count2=0;
  * User button State
  */
 extern uint8_t button_check_state, button_check_state2;
+extern volatile uint8_t standby_count;
 extern volatile uint16_t button_state, button_state2;
 extern volatile uint16_t time_passed, time_passed2;
 uint32_t delay_count = 0;
@@ -62,6 +63,9 @@ void SysTick_Handler(void) {
         time_passed2++;
     }
     // end button press state machine
+
+    if (delay_count % 100 == 0)
+        standby_count++;
 
     if (!queue_empty(&txbuf)) {
         flush_uart();

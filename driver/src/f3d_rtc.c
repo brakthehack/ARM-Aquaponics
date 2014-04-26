@@ -26,7 +26,7 @@ void RTC_init(void) {
     RTC_TimeTypeDef RTC_TimeStructure;
     RTC_DateTypeDef RTC_DateStructure;
     RTC_InitTypeDef RTC_InitStructure;
-
+    
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE);
     PWR_BackupAccessCmd(ENABLE);
     RCC_BackupResetCmd(ENABLE);
@@ -37,6 +37,7 @@ void RTC_init(void) {
     RCC_RTCCLKConfig(RCC_RTCCLKSource_LSE);
     RCC_RTCCLKCmd(ENABLE);
 
+    PWR_BackupAccessCmd(ENABLE);
     RTC_WriteProtectionCmd(DISABLE); // Disable the RTC's write protection
     RTC_EnterInitMode();
     RTC_WaitForSynchro();
@@ -45,9 +46,18 @@ void RTC_init(void) {
     RTC_Init(&RTC_InitStructure);
 
     RTC_DateStructInit(&RTC_DateStructure);
+
+    RTC_DateStructure.RTC_Month   = RTC_Month_April;
+    RTC_DateStructure.RTC_Date    = 26;
+    RTC_DateStructure.RTC_Year    = 14;
+    
     RTC_SetDate(RTC_Format_BCD, &RTC_DateStructure);
 
     RTC_TimeStructInit(&RTC_TimeStructure);
+    RTC_TimeStructure.RTC_Hours   = 16;
+    RTC_TimeStructure.RTC_Minutes = 21;
+    RTC_TimeStructure.RTC_Seconds = 0;
+
     RTC_SetTime(RTC_Format_BIN, &RTC_TimeStructure);
 
     RTC_ExitInitMode();
@@ -112,7 +122,7 @@ void RTC_LSI_init(void) {
  * @retval None
  */
 
-void f3d_stop_init(void)
+void f3d_standby_init(void)
 {
 
     NVIC_InitTypeDef NVIC_InitStructure;
@@ -191,8 +201,8 @@ void f3d_stop_init(void)
     
     
     RTC_WakeUpCmd(DISABLE);
-    RTC_SetWakeUpCounter(0xFFFF); 
-    RTC_WakeUpClockConfig(RTC_WakeUpClock_RTCCLK_Div8);
+    RTC_SetWakeUpCounter(0xFFFF);
+    RTC_WakeUpClockConfig(RTC_WakeUpClock_RTCCLK_Div16);
 
     RTC_ExitInitMode();
     RTC_WriteProtectionCmd(ENABLE);

@@ -1,63 +1,78 @@
 #include "application.h"
 #include <stdlib.h>
 
+#define SEND_INTERVAL_SECONDS 20
+#define MOISTURE_THRESHOLD    100
+
+// checks if standby flag has been triggered
 volatile extern int standby_flag;
 
-#define SEND_INTERVAL_SECONDS 60
+// timer for entering standby
+volatile uint8_t standby_count;
 
 int main(){
 
     app_init();
-    
+
     char txdata[32] = {}, rxdata[32] = {};
     char index;
-    int moisture;
-    int last_second = 0, current_second = 0;
+    int moisture, battery, pump_status;
+    RTC_DateTypeDef CurrentDate;
+    RTC_TimeTypeDef CurrentTime;
+    uint8_t throwaway_count = 0;
 
-    RTC_DateTypeDef   RTC_CurrentDate;
-    RTC_TimeTypeDef   RTC_CurrentTime;
+    app_read_moisture_data(&moisture);
 
-    RTC_GetDate(RTC_Format_BIN,&RTC_CurrentDate);
+    if (moisture < MOISTURE_THRESHOLD) {
+        app_turn_on_pump();
+        printf("pump turned on \n");
+    }else
+        app_turn_off_pump();
 
-    while (1) {
-      motor_on();
-      printf("battery: %d\n",f3d_read_adc(BATTERY));
-      // printf("a\n");
-      printf("moisture: %d\n",f3d_read_adc(MOISTURE));
-      /*
-        // acquire data
-        RTC_GetTime(RTC_Format_BIN,&RTC_CurrentTime);
-        current_second = RTC_CurrentTime.RTC_Seconds;
-        //app_read_moisture_data(&moisture);
-        //printf("moisture %d\n", moisture);
-        printf("seconds %d\n", current_second);
-        printf("entering standby\n");
-        app_enter_stop();
-        if (standby_flag) {
-            printf("standby triggered\n");
-            standby_flag = 0;
-            do  {
-                RTC_GetTime(RTC_Format_BIN,&RTC_CurrentTime);
-                current_second = RTC_CurrentTime.RTC_Seconds;
-                
-                last_second = current_second;
-                app_read_moisture_data(&moisture);
-                app_read_moisture_data(&moisture);
-                //moisture = rand() % 2000;
-                printf("moisture %d\n", moisture);
-                app_prepare_nordic_packet(&moisture, txdata);
-                //app_print_nordic_data(txdata);
-                printf("BEFORE SEND %x%x%x%x\n", txdata[0], txdata[1], txdata[2], txdata[3]);
-                app_send_nordic_packet(txdata, rxdata);
-                delay(500);
-            }while (current_second != 0);
+    while(standby_count < SEND_INTERVAL_SECONDS) {
 
-	    }*/
-      //printf("after while loop\n");
         f3d_led_all_on();
-        delay(200);
+
+        // get time data
+        RTC_GetDate(RTC_Format_BIN, &CurrentDate);
+        RTC_GetTime(RTC_Format_BIN, &CurrentTime);
+
+        // get analog data
+        app_read_moisture_data(&moisture);
+        f3d_delay_uS(100);
+        app_read_battery_power(&battery);
+        f3d_delay_uS(100);
+
+        printf("Power: %d\n", battery);
+        printf("Moisture: %d\n", moisture);
+        printf("Date: %d:%d:%d\n", CurrentDate.RTC_Month, CurrentDate.RTC_Date,
+                CurrentDate.RTC_Year);
+        printf("Time: %d:%d:%d\n", CurrentTime.RTC_Hours, CurrentTime.RTC_Minutes, 
+                CurrentTime.RTC_Seconds);
+        printf("Standby count: %d\n", standby_count);
+
+        //if (throwaway_count++ > 3) {
+        app_prepare_nordic_packet(&moisture, 
+                &battery, &CurrentDate, &CurrentTime, txdata);
+        app_send_nordic_packet(txdata, rxdata);
+        //}
+
         f3d_led_all_off();
+        delay(1000);
+
     }
+
+    app_turn_off_pump();
+    app_read_moisture_data(&moisture);
+    f3d_delay_uS(100);
+    app_read_battery_power(&battery);
+    f3d_delay_uS(100);
+    app_prepare_nordic_packet(&moisture, 
+            &battery, &CurrentDate, &CurrentTime, txdata);
+    app_send_nordic_packet(txdata, rxdata);
+    delay(100);
+    app_enter_standby();
+    while (1);
 }
 
 #ifdef USE_FULL_ASSERT
