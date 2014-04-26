@@ -14,6 +14,7 @@ OBJS=  $(STARTUP) main.o \
 	   f3d_systick_indoor.o \
 	   f3d_delay.o \
 	   f3d_i2c.o \
+	   lsi.o \
 	   f3d_dac.o \
 	   f3d_lcd_sd.o \
 	   newlib_stubs.o \
