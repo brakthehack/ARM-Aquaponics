@@ -51,6 +51,7 @@ uint8_t pump;
 int m_buffer[10]={0,0,0,0,0,0,0,0,0,0};
 int m_update=0;
 
+int rtc_set=0;
 
 char t_buffer[5];
 char d_buffer[5];
@@ -373,6 +374,8 @@ void time_update(RTC_TimeTypeDef *t,RTC_DateTypeDef *d,uint8_t *linebuffer){
   RTC_SetDate(RTC_Format_BIN, d);
   PWR_BackupAccessCmd(DISABLE);
 
+  rtc_set=1;
+
 }
 
 
@@ -521,7 +524,9 @@ int main() {
 	graph(m_buffer,0);
 	battery_color(power);
 	pump_draw(pump);
-	time_update(&t,&d,linebuffer);
+	if(!rtc_set){
+	  time_update(&t,&d,linebuffer);
+	}
 	m_update=0;
       }
     }
