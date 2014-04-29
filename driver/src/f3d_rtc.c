@@ -47,14 +47,14 @@ void RTC_init(void) {
 
     RTC_DateStructInit(&RTC_DateStructure);
 
-    RTC_DateStructure.RTC_Month   = RTC_Month_April;
-    RTC_DateStructure.RTC_Date    = 26;
+    RTC_DateStructure.RTC_Month   = RTC_Month_May;
+    RTC_DateStructure.RTC_Date    = 28;
     RTC_DateStructure.RTC_Year    = 14;
     
     RTC_SetDate(RTC_Format_BCD, &RTC_DateStructure);
 
     RTC_TimeStructInit(&RTC_TimeStructure);
-    RTC_TimeStructure.RTC_Hours   = 16;
+    RTC_TimeStructure.RTC_Hours   = 22;
     RTC_TimeStructure.RTC_Minutes = 21;
     RTC_TimeStructure.RTC_Seconds = 0;
 
@@ -156,9 +156,10 @@ void f3d_standby_init(void)
     /* Wait for RTC APB registers synchronisation */
     RTC_WaitForSynchro();
 
-
+    // 32768Hz / 2 - 1 = 0x3FFF
     RTC_InitStructure.RTC_AsynchPrediv = 0x7F;
-    RTC_InitStructure.RTC_SynchPrediv   =  0xFF; /* (32KHz / 128) - 1 = 0xFF*/
+    // 32768Hz / 1 - 1 = 0x7FFF
+    RTC_InitStructure.RTC_SynchPrediv   =  0xFF; 
     RTC_InitStructure.RTC_HourFormat = RTC_HourFormat_24;
     RTC_Init(&RTC_InitStructure);
 
@@ -201,9 +202,9 @@ void f3d_standby_init(void)
     
     
     RTC_WakeUpCmd(DISABLE);
-    RTC_SetWakeUpCounter(0xFFFF);
-    RTC_WakeUpClockConfig(RTC_WakeUpClock_RTCCLK_Div16);
-
+    RTC_SetWakeUpCounter(0x1F);
+    //RTC_WakeUpClockConfig(RTC_WakeUpClock_RTCCLK_Div2);
+    RTC_WakeUpClockConfig(RTC_WakeUpClock_CK_SPRE_16bits);
     RTC_ExitInitMode();
     RTC_WriteProtectionCmd(ENABLE);
     RTC_WakeUpCmd(ENABLE);

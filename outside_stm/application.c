@@ -5,6 +5,7 @@
 #include "application.h"
 
 #define MAX_RX_TIMEOUT 10000
+#define MAX_TX_TIMEOUT 10000
 
 RTC_DateTypeDef   RTC_CurrentDate;
 RTC_TimeTypeDef   RTC_CurrentTime;
@@ -15,12 +16,18 @@ uint8_t _pump_state = 0;
 void app_send_nordic_packet(char *txdata, char *rxdata) {
 
     int index;
-    int rx_timeout = 0;
+    int rx_timeout = 0, tx_timeout = 0;
 
     printf("\n");
     printf("Node: transmit character %c\n",txdata);
     nrf24l01base_write_tx_payload(txdata, 32, true);      // nordic writes a character
-    while(!(nrf24l01base_irq_pin_active() && (nrf24l01base_irq_tx_ds_active() || nrf24l01base_irq_max_rt_active()))); // wait until it is gone
+    while(!(nrf24l01base_irq_pin_active() && (nrf24l01base_irq_tx_ds_active() || nrf24l01base_irq_max_rt_active()))) {
+        // error catching in case we get stuck
+        if (tx_timeout++ > MAX_TX_TIMEOUT) {
+            printf("tx timeout\n");
+            break;
+        }
+    }// wait until it is gone
 
     //Node Listen Mode if the maximum retry limit was not hit
     if (!nrf24l01base_irq_max_rt_active()) {
@@ -31,8 +38,10 @@ void app_send_nordic_packet(char *txdata, char *rxdata) {
 
         printf("node reception\n");
         while(!(nrf24l01base_irq_pin_active() && nrf24l01base_irq_rx_dr_active())) {
-            if (rx_timeout++ > MAX_RX_TIMEOUT)
+            if (rx_timeout++ > MAX_RX_TIMEOUT) {
+                printf("rx timeout\n");
                 break;
+            }
         }
         if (rx_timeout < MAX_RX_TIMEOUT) {
             nrf24l01base_read_rx_payload(rxdata, 32);

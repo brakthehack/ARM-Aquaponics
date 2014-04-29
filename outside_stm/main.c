@@ -1,8 +1,8 @@
 #include "application.h"
 #include <stdlib.h>
 
-#define SEND_INTERVAL_SECONDS 20
-#define MOISTURE_THRESHOLD    100
+#define SEND_INTERVAL_SECONDS 60
+#define MOISTURE_THRESHOLD    400
 
 // checks if standby flag has been triggered
 volatile extern int standby_flag;
@@ -26,8 +26,31 @@ int main(){
     if (moisture < MOISTURE_THRESHOLD) {
         app_turn_on_pump();
         printf("pump turned on \n");
-    }else
+    }else {
+
         app_turn_off_pump();
+        app_read_moisture_data(&moisture);
+        f3d_delay_uS(100);
+        app_read_battery_power(&battery);
+        RTC_GetDate(RTC_Format_BIN, &CurrentDate);
+        RTC_GetTime(RTC_Format_BIN, &CurrentTime);
+
+        printf("Power: %d\n", battery);
+        printf("Moisture: %d\n", moisture);
+        printf("Date: %d:%d:%d\n", CurrentDate.RTC_Month, CurrentDate.RTC_Date,
+                CurrentDate.RTC_Year);
+        printf("Time: %d:%d:%d\n", CurrentTime.RTC_Hours, CurrentTime.RTC_Minutes, 
+                CurrentTime.RTC_Seconds);
+
+        f3d_delay_uS(100);
+        app_prepare_nordic_packet(&moisture, 
+            &battery, &CurrentDate, &CurrentTime, txdata);
+        app_send_nordic_packet(txdata, rxdata);
+        delay(100);
+
+        app_enter_standby();
+        while(1);
+    }
 
     while(standby_count < SEND_INTERVAL_SECONDS) {
 
