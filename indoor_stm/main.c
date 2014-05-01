@@ -217,6 +217,13 @@ void pump_draw(char pump){
 
 
 void battery_color(int power){
+  if(power>100){
+    power=100;
+  }
+
+  if(power<0){
+    power=0;
+  }
   int x,y;
   uint16_t color=GREEN;
   //int x_limit=120;
