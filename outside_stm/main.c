@@ -19,7 +19,6 @@ int main(){
     int moisture, battery, pump_status;
     RTC_DateTypeDef CurrentDate;
     RTC_TimeTypeDef CurrentTime;
-    uint8_t throwaway_count = 0;
 
     app_read_moisture_data(&moisture);
 
@@ -41,11 +40,12 @@ int main(){
                 CurrentDate.RTC_Year);
         printf("Time: %d:%d:%d\n", CurrentTime.RTC_Hours, CurrentTime.RTC_Minutes, 
                 CurrentTime.RTC_Seconds);
-
+        
         f3d_delay_uS(100);
         app_prepare_nordic_packet(&moisture, 
             &battery, &CurrentDate, &CurrentTime, txdata);
         app_send_nordic_packet(txdata, rxdata);
+        
         delay(100);
 
         app_enter_standby();
@@ -79,6 +79,7 @@ int main(){
                 &battery, &CurrentDate, &CurrentTime, txdata);
         app_send_nordic_packet(txdata, rxdata);
         //}
+        battery = 70;
 
         f3d_led_all_off();
         delay(1000);
@@ -86,14 +87,18 @@ int main(){
     }
 
     app_turn_off_pump();
+    
     app_read_moisture_data(&moisture);
     f3d_delay_uS(100);
     app_read_battery_power(&battery);
+    
     f3d_delay_uS(100);
     app_prepare_nordic_packet(&moisture, 
             &battery, &CurrentDate, &CurrentTime, txdata);
     app_send_nordic_packet(txdata, rxdata);
+    
     delay(100);
+    
     app_enter_standby();
     while (1);
 }

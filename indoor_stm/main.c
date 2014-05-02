@@ -69,6 +69,13 @@ int read_moisture_data(char *data) {
     result |= (int) data[2];
     result = result << 8;
     result |= (int) data[3];
+    if (result>1800){
+      result=1800;
+    }
+    if (result<0){
+      result=0;
+    }
+    
     return result;
 }
 
